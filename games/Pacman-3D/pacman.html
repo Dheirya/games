@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            html,
+            body {
+                font-family: sans-serif;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+            }
+            #lives {
+                position: absolute;
+                top: 2em;
+                right: 2em;
+            }
+            .life {
+                margin: 1em;
+            }
+            button {
+                border: none;
+                color: white;
+                background-color: blue;
+                opacity: 0.5;
+                padding: 0.5em 1em;
+                cursor: pointer;
+            }
+            #help-button {
+                position: absolute;
+                top: 1em;
+                left: 1em;
+            }
+            .dialog {
+                color: rgb(255, 255, 200);
+                background-color: rgba(0, 0, 30, 0.8);
+                text-align: center;
+                position: absolute;
+                left: 30%;
+                top: 25%;
+                width: 40%;
+                z-index: 1;
+                padding: 2em;
+                cursor: auto;
+                display: none;
+            }
+        </style>
+        <title>Pacman Game</title>
+    </head>
+    <body oncontextmenu="return false" style="background-image: url('https://res.cloudinary.com/dpoer5oaq/image/upload/v1630345961/wp3255727_skdva5.jpg');">
+        <div id="lives"></div>
+        <button id="help-button" onclick="var dialog = document.getElementById('help-dialog'); dialog.style.display = 'block';">HELP</button>
+        <div id="help-dialog" class="dialog">
+            <h2>CONTROLS</h2>
+            <p>Arrow Keys: Use &uarr;/&darr; to move forward/backward and &larr;/&rarr; to turn left/right.</p>
+            <p>After you collect all of the dots, the game will start over but pacman and the ghosts will get a little bit faster!</p>
+            <p>
+                <button onclick="var dialog = document.getElementById('help-dialog'); dialog.style.display = 'none';">Close</button>
+            </p>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r126/three.min.js"></script>
+        <script>
+            !(function () {
+                var e,
+                    o,
+                    t,
+                    n,
+                    i,
+                    r,
+                    a,
+                    c,
+                    s = 2,
+                    d = 1.5,
+                    l = new THREE.Vector3(0, 0, 1),
+                    p = new THREE.Vector3(-1, 0, 0),
+                    h = new THREE.Vector3(0, 1, 0),
+                    E = new THREE.Vector3(1, 0, 0),
+                    u = new THREE.Vector3(0, -1, 0),
+                    f = [
+                        "# # # # # # # # # # # # # # # # # # # # # # # # # # # #",
+                        "# . . . . . . . . . . . . # # . . . . . . . . . . . . #",
+                        "# . # # # # . # # # # # . # # . # # # # # . # # # # . #",
+                        "# o # # # # . # # # # # . # # . # # # # # . # # # # o #",
+                        "# . # # # # . # # # # # . # # . # # # # # . # # # # . #",
+                        "# . . . . . . . . . . . . . . . . . . . . . . . . . . #",
+                        "# . # # # # . # # . # # # # # # # # . # # . # # # # . #",
+                        "# . # # # # . # # . # # # # # # # # . # # . # # # # . #",
+                        "# . . . . . . # # . . . . # # . . . . # # . . . . . . #",
+                        "# # # # # # . # # # # #   # #   # # # # # . # # # # # #",
+                        "          # . # # # # #   # #   # # # # # . #          ",
+                        "          # . # #         G           # # . #          ",
+                        "          # . # #   # # # # # # # #   # # . #          ",
+                        "# # # # # # . # #   #             #   # # . # # # # # #",
+                        "            .       #             #       .            ",
+                        "# # # # # # . # #   #             #   # # . # # # # # #",
+                        "          # . # #   # # # # # # # #   # # . #          ",
+                        "          # . # #                     # # . #          ",
+                        "          # . # #   # # # # # # # #   # # . #          ",
+                        "# # # # # # . # #   # # # # # # # #   # # . # # # # # #",
+                        "# . . . . . . . . . . . . # # . . . . . . . . . . . . #",
+                        "# . # # # # . # # # # # . # # . # # # # # . # # # # . #",
+                        "# . # # # # . # # # # # . # # . # # # # # . # # # # . #",
+                        "# o . . # # . . . . . . . P   . . . . . . . # # . . o #",
+                        "# # # . # # . # # . # # # # # # # # . # # . # # . # # #",
+                        "# # # . # # . # # . # # # # # # # # . # # . # # . # # #",
+                        "# . . . . . . # # . . . . # # . . . . # # . . . . . . #",
+                        "# . # # # # # # # # # # . # # . # # # # # # # # # # . #",
+                        "# . # # # # # # # # # # . # # . # # # # # # # # # # . #",
+                        "# . . . . . . . . . . . . . . . . . . . . . . . . . . #",
+                        "# # # # # # # # # # # # # # # # # # # # # # # # # # # #",
+                    ],
+                    w = function (e, o) {
+                        var t = Math.round(o.x),
+                            n = Math.round(o.y);
+                        return e[n] && e[n][t];
+                    },
+                    m = function (e, o) {
+                        var t = w(e, o);
+                        return t && !0 === t.isWall;
+                    },
+                    y = function (e, o, t) {
+                        var n = Math.round(t.x),
+                            i = Math.round(t.y);
+                        e[i] && e[i][n] && (e[i][n].visible = !1);
+                    },
+                    g =
+                        ((e = new THREE.BoxGeometry(1, 1, 1)),
+                        (o = new THREE.MeshLambertMaterial({ color: "blue" })),
+                        function () {
+                            var t = new THREE.Mesh(e, o);
+                            return (t.isWall = !0), t;
+                        }),
+                    v =
+                        ((t = new THREE.SphereGeometry(0.05)),
+                        (n = new THREE.MeshPhongMaterial({ color: 16767673 })),
+                        function () {
+                            var e = new THREE.Mesh(t, n);
+                            return (e.isDot = !0), e;
+                        }),
+                    T =
+                        ((i = new THREE.SphereGeometry(0.1, 12, 8)),
+                        (r = new THREE.MeshPhongMaterial({ color: 16767673 })),
+                        function () {
+                            var e = new THREE.Mesh(i, r);
+                            return (e.isPowerPellet = !0), e;
+                        }),
+                    H = (function () {
+                        for (var e, o = [], t = 0; t < 40; t++) (e = (t / 39) * Math.PI), o.push(new THREE.SphereGeometry(0.25, 16, 16, e, 2 * Math.PI - 2 * e)), o[t].rotateX(Math.PI / 2);
+                        var n = new THREE.MeshPhongMaterial({ color: "yellow", side: THREE.DoubleSide });
+                        return function (e, t) {
+                            var i = new THREE.Mesh(o[0], n);
+                            return (i.frames = o), (i.currentFrame = 0), (i.isPacman = !0), (i.isWrapper = !0), (i.atePellet = !1), (i.distanceMoved = 0), i.position.copy(t), (i.direction = new THREE.Vector3(-1, 0, 0)), e.add(i), i;
+                        };
+                    })(),
+                    M =
+                        ((a = new THREE.SphereGeometry(0.3125, 16, 16)),
+                        function (e, o) {
+                            var t = new THREE.MeshPhongMaterial({ color: "red" }),
+                                n = new THREE.Mesh(a, t);
+                            (n.isGhost = !0), (n.isWrapper = !0), (n.isAfraid = !1), n.position.copy(o), (n.direction = new THREE.Vector3(-1, 0, 0)), e.add(n);
+                        }),
+                    R =
+                        ((c = new THREE.Vector3()),
+                        function (e, o) {
+                            return c.copy(e.position).sub(o.position), c.length();
+                        });
+                !(function () {
+                    var e,
+                        o =
+                            ((e = {}),
+                            document.body.addEventListener("keydown", function (o) {
+                                (e[o.keyCode] = !0), (e[String.fromCharCode(o.keyCode)] = !0);
+                            }),
+                            document.body.addEventListener("keyup", function (o) {
+                                (e[o.keyCode] = !1), (e[String.fromCharCode(o.keyCode)] = !1);
+                            }),
+                            document.body.addEventListener("blur", function (o) {
+                                for (var t in e) e.hasOwnProperty(t) && (e[t] = !1);
+                            }),
+                            e),
+                        t = (function () {
+                            var e = new THREE.WebGLRenderer({ antialias: !0 });
+                            return e.setClearColor("black", 1), e.setSize(window.innerWidth, window.innerHeight), document.body.appendChild(e.domElement), e;
+                        })(),
+                        n = (function () {
+                            var e = new THREE.Scene();
+                            e.add(new THREE.AmbientLight(8947848));
+                            var o = new THREE.SpotLight("white", 0.5);
+                            return o.position.set(0, 0, 50), e.add(o), e;
+                        })(),
+                        i = (function (e, o) {
+                            var t,
+                                n,
+                                i = {};
+                            (i.bottom = -(o.length - 1)), (i.top = 0), (i.left = 0), (i.right = 0), (i.numDots = 0), (i.pacmanSpawn = null), (i.ghostSpawn = null);
+                            for (var r = 0; r < o.length; r++) {
+                                i[(n = -r)] = {};
+                                var a = Math.floor(o[r].length / 2);
+                                i.right = Math.max(i.right, a);
+                                for (var c = 0; c < o[r].length; c += 2) {
+                                    t = Math.floor(c / 2);
+                                    var s = o[r][c],
+                                        d = null;
+                                    "#" === s
+                                        ? (d = g())
+                                        : "." === s
+                                        ? ((d = v()), (i.numDots += 1))
+                                        : "o" === s
+                                        ? (d = T())
+                                        : "P" === s
+                                        ? (i.pacmanSpawn = new THREE.Vector3(t, n, 0))
+                                        : "G" === s && (i.ghostSpawn = new THREE.Vector3(t, n, 0)),
+                                        null !== d && (d.position.set(t, n, 0), (i[n][t] = d), e.add(d));
+                                }
+                            }
+                            return (i.centerX = (i.left + i.right) / 2), (i.centerY = (i.bottom + i.top) / 2), i;
+                        })(n, f),
+                        r = 0,
+                        a = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1e3);
+                    a.up.copy(l), (a.targetPosition = new THREE.Vector3()), (a.targetLookAt = new THREE.Vector3()), (a.lookAtPosition = new THREE.Vector3());
+                    for (
+                        var c,
+                            P,
+                            A = (function (e) {
+                                var o = (e.right - e.left) / 2,
+                                    t = (e.top - e.bottom) / 2,
+                                    n = new THREE.OrthographicCamera(-o, o, t, -t, 1, 100);
+                                return n.position.copy(new THREE.Vector3(e.centerX, e.centerY, 10)), n.lookAt(new THREE.Vector3(e.centerX, e.centerY, 0)), n;
+                            })(i),
+                            S = H(n, i.pacmanSpawn),
+                            V = -8,
+                            b = 0,
+                            k = (lost = !1),
+                            x = [],
+                            C = 3,
+                            G = document.getElementById("lives"),
+                            I = 0;
+                        I < C;
+                        I++
+                    ) {
+                        var L = document.createElement("img");
+                        (L.src = "pacman.png"), (L.className = "life"), G.appendChild(L);
+                    }
+                    new THREE.Vector3();
+                    var W,
+                        D,
+                        Y,
+                        O,
+                        X = function (e, o, t) {
+                            var i = new THREE.MeshPhongMaterial({ color: "red" }),
+                                r = new THREE.TextGeometry(e, { size: o, height: 0.05, font: "Helvetiker" }),
+                                a = new THREE.Mesh(r, i);
+                            return a.position.copy(S.position).add(l), a.up.copy(S.direction), a.lookAt(a.position.clone().add(l)), (a.isTemporary = !0), (a.removeAfter = t + 3), n.add(a), a;
+                        },
+                        B = function (e, o) {
+                            if (
+                                (k || lost || z(e),
+                                k || r !== i.numDots || ((k = !0), (P = o), X("You won =D", 1, o)),
+                                k &&
+                                    o - P > 3 &&
+                                    (S.position.copy(i.pacmanSpawn),
+                                    S.direction.copy(p),
+                                    (S.distanceMoved = 0),
+                                    n.children.forEach(function (e) {
+                                        (!0 !== e.isDot && !0 !== e.isPowerPellet) || (e.visible = !0), !0 === e.isGhost && x.push(e);
+                                    }),
+                                    (s += 1),
+                                    (d += 1),
+                                    (k = !1),
+                                    (r = 0),
+                                    (b = 0)),
+                                C > 0 && lost && o - c > 4 && ((lost = !1), S.position.copy(i.pacmanSpawn), S.direction.copy(p), (S.distanceMoved = 0)),
+                                lost)
+                            ) {
+                                var t = ((o - c) * Math.PI) / 2,
+                                    a = Math.min(S.frames.length - 1, Math.floor((t / Math.PI) * S.frames.length));
+                                S.geometry = S.frames[a];
+                            } else {
+                                var l = Math.PI / 4;
+                                (t = (2 * S.distanceMoved) % (2 * l)) > l && (t = 2 * l - t), (a = Math.floor((t / Math.PI) * S.frames.length)), (S.geometry = S.frames[a]);
+                            }
+                        },
+                        q = new THREE.Vector3(),
+                        z = function (e) {
+                            S.up.copy(S.direction).applyAxisAngle(l, -Math.PI / 2),
+                                S.lookAt(q.copy(S.position).add(l)),
+                                o[38] && (S.translateOnAxis(p, s * e), (S.distanceMoved += s * e)),
+                                o[37] && S.direction.applyAxisAngle(l, (Math.PI / 2) * e),
+                                o[39] && S.direction.applyAxisAngle(l, (-Math.PI / 2) * e),
+                                o[40] && (S.translateOnAxis(p, -s * e), (S.distanceMoved += s * e));
+                            var t = S.position.clone().addScaledVector(p, 0.25).round(),
+                                n = S.position.clone().addScaledVector(h, 0.25).round(),
+                                a = S.position.clone().addScaledVector(E, 0.25).round(),
+                                c = S.position.clone().addScaledVector(u, 0.25).round();
+                            m(i, t) && (S.position.x = t.x + 0.5 + 0.25), m(i, a) && (S.position.x = a.x - 0.5 - 0.25), m(i, n) && (S.position.y = n.y - 0.5 - 0.25), m(i, c) && (S.position.y = c.y + 0.5 + 0.25);
+                            var d = w(i, S.position);
+                            d && !0 === d.isDot && !0 === d.visible && (y(i, 0, S.position), (r += 1)), (S.atePellet = !1), d && !0 === d.isPowerPellet && !0 === d.visible && (y(i, 0, S.position), (S.atePellet = !0));
+                        },
+                        F = function (e, o) {
+                            k
+                                ? (a.targetPosition.set(i.centerX, i.centerY, 30), a.targetLookAt.set(i.centerX, i.centerY, 0))
+                                : lost
+                                ? ((a.targetPosition = S.position.clone().addScaledVector(l, 4)), (a.targetLookAt = S.position.clone().addScaledVector(S.direction, 0.01)))
+                                : (a.targetPosition.copy(S.position).addScaledVector(l, 1.5).addScaledVector(S.direction, -1), a.targetLookAt.copy(S.position).add(S.direction));
+                            var t = lost || k ? 1 : 10;
+                            a.position.lerp(a.targetPosition, e * t), a.lookAtPosition.lerp(a.targetLookAt, e * t), a.lookAt(a.lookAtPosition);
+                        },
+                        N = function (e, o, t) {
+                            !0 === S.atePellet && ((e.isAfraid = !0), (e.becameAfraidTime = t), e.material.color.setStyle("white")),
+                                e.isAfraid && t - e.becameAfraidTime > 10 && ((e.isAfraid = !1), e.material.color.setStyle("red")),
+                                j(e, o),
+                                !lost &&
+                                    !k &&
+                                    R(S, e) < 0.5625 &&
+                                    (!0 === e.isAfraid ? (x.push(e), (b -= 1)) : ((C -= 1), (document.getElementsByClassName("life")[C].style.display = "none"), X(C > 0 ? "You died =(" : "Game over =(", 0.1, t), (lost = !0), (c = t)));
+                        },
+                        j =
+                            ((W = new THREE.Vector3()),
+                            (D = new THREE.Vector3()),
+                            (Y = new THREE.Vector3()),
+                            (O = new THREE.Vector3()),
+                            function (e, o) {
+                                if ((W.copy(e.position).addScaledVector(e.direction, 0.5).round(), e.translateOnAxis(e.direction, o * d), D.copy(e.position).addScaledVector(e.direction, 0.5).round(), !D.equals(W))) {
+                                    Y.copy(e.direction).applyAxisAngle(l, Math.PI / 2), O.copy(e.direction).applyAxisAngle(l, -Math.PI / 2);
+                                    var t = m(i, D),
+                                        n = m(i, D.copy(e.position).add(Y)),
+                                        r = m(i, D.copy(e.position).add(O));
+                                    if (!n || !r) {
+                                        var a = [];
+                                        if ((t || a.push(e.direction), n || a.push(Y), r || a.push(O), 0 === a.length)) throw new Error("A ghost got stuck!");
+                                        var c = a[Math.floor(Math.random() * a.length)];
+                                        e.direction.copy(c), e.position.round().addScaledVector(e.direction, o);
+                                    }
+                                }
+                            });
+                    !(function (e, o) {
+                        o = o || requestAnimationFrame;
+                        var t = window.performance.now(),
+                            n = 0,
+                            i = function () {
+                                var r = window.performance.now(),
+                                    a = (r - t) / 1e3;
+                                (t = r), (a = Math.min(a, 1 / 30)), e(a, (n += a)), o(i);
+                            };
+                        o(i);
+                    })(function (e, o) {
+                        !(function (e, o) {
+                            for (item in (B(e, o),
+                            F(e, o),
+                            n.children.forEach(function (t) {
+                                !0 === t.isGhost && N(t, e, o),
+                                    !0 === t.isWrapper &&
+                                        (function (e, o) {
+                                            e.position.x < o.left ? (e.position.x = o.right) : e.position.x > o.right && (e.position.x = o.left),
+                                                e.position.y > o.top ? (e.position.y = o.bottom) : e.position.y < o.bottom && (e.position.y = o.top);
+                                        })(t, i),
+                                    !0 === t.isTemporary && o > t.removeAfter && x.push(t);
+                            }),
+                            x.forEach(n.remove, n),
+                            x))
+                                x.hasOwnProperty(item) && (n.remove(x[item]), delete x[item]);
+                            b < 4 && o - V > 8 && (M(n, i.ghostSpawn), (b += 1), (V = o));
+                        })(e, o),
+                            t.setViewport(0, 0, t.domElement.width, t.domElement.height),
+                            t.render(n, a),
+                            (function (e, o, t) {
+                                t.children.forEach(function (e) {
+                                    !0 !== e.isWall && e.scale.set(2.5, 2.5, 2.5);
+                                }),
+                                    e.setScissorTest(!0),
+                                    e.setScissor(10, 10, 200, 200),
+                                    e.setViewport(10, 10, 200, 200),
+                                    e.render(t, o),
+                                    e.setScissorTest(!1),
+                                    t.children.forEach(function (e) {
+                                        e.scale.set(1, 1, 1);
+                                    });
+                            })(t, A, n);
+                    });
+                })();
+            })();
+        </script>
+    </body>
+</html>

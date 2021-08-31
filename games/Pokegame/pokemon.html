@@ -1,0 +1,1473 @@
+<!doctype html>
+<html>
+    <head>
+       <meta charset="UTF-8"/>
+       <title>Pokemon Game</title>
+       <style>
+       .colored-toast.swal2-icon-success {
+          background-color: #a5dc86 !important;
+       }
+
+       .colored-toast.swal2-icon-error {
+          background-color: #f27474 !important;
+       }
+
+       .colored-toast.swal2-icon-warning {
+          background-color: #f8bb86 !important;
+       }
+
+       .colored-toast.swal2-icon-info {
+          background-color: #3fc3ee !important;
+       }
+
+       .colored-toast.swal2-icon-question {
+          background-color: #87adbd !important;
+       }
+
+       .colored-toast .swal2-title {
+          color: white;
+       }
+
+       .colored-toast .swal2-close {
+          color: white;
+       }
+
+       .colored-toast .swal2-content {
+          color: white;
+       }
+
+       body {
+          background-color: #ccc;
+          font-family: rubik;
+          font-size: 16px;
+          color: black;
+          padding-top: 30px;
+       }
+
+       header {
+          text-align: center;
+       }
+
+       header img {
+          max-height: 100px;
+          cursor: pointer;
+       }
+
+       strong {
+          font-weight: 600;
+          line-height: 1.5em;
+       }
+
+       .type {
+          display: inline-block;
+          height: 30px;
+          width: 30px;
+          margin: 10px;
+          background-image: url('https://orig15.deviantart.net/24d8/f/2011/057/3/5/ge___energy_type_icons_by_aschefield101-d3agp02.png');
+          background-repeat: no-repeat;
+          background-size: 500% 400%;
+       }
+
+       .id {
+          position: absolute;
+          top: 10px;
+          left: 10px;
+          z-index: 99;
+          font-size: 1.3rem;
+       }
+
+       .type.electric {
+          background-position: 100% 0;
+       }
+
+       .type.bug {
+          background-position: 100% 33%;
+       }
+
+       .type.dragon {
+          background-position: 0 66%;
+       }
+
+       .type.fairy {
+          background-position: 0 0;
+       }
+
+       .type.flying {
+          background-position: 50% 33%;
+       }
+
+       .type.ghost {
+          background-position: 75% 33%;
+       }
+
+       .type.psychic {
+          background-position: 75% 66%;
+       }
+
+       .type.ground {
+          background-position: 100% 66%;
+       }
+
+       .type.rock {
+          background-position: 100% 66%;
+       }
+
+       .type.ice {
+          background-position: 25% 66%;
+       }
+
+       .type.steel {
+          background-position: 37% 100%;
+       }
+
+       .type.dark {
+          background-position: 50% 0;
+       }
+
+       .type.poison {
+          background-position: 50% 66%;
+       }
+
+       .type.normal {
+          background-position: 25% 0;
+       }
+
+       .type.fire {
+          background-position: 25% 33%;
+       }
+
+       .type.water {
+          background-position: 63% 100%;
+       }
+
+       .type.grass {
+          background-position: 100% 33%;
+       }
+
+       .type.fighting {
+          background-position: 0 33%;
+       }
+
+       .row {
+          display: block;
+          min-height: 50px;
+       }
+
+       .instructions {
+          text-align: center;
+          padding: 20px 0;
+       }
+
+       .instructions p {
+          font-size: 2em;
+       }
+
+       .characters.hidden {
+          visibility: hidden;
+          opacity: 0;
+          height: 0;
+       }
+
+       .stadium {
+          background-image: url('https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/aa15ff7d-d333-4bf9-b115-95e18f63fe91/d5ynr9c-33aeebd0-1cd8-45d9-86fc-8431aa114534.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwic3ViIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsImF1ZCI6WyJ1cm46c2VydmljZTpmaWxlLmRvd25sb2FkIl0sIm9iaiI6W1t7InBhdGgiOiIvZi9hYTE1ZmY3ZC1kMzMzLTRiZjktYjExNS05NWUxOGY2M2ZlOTEvZDV5bnI5Yy0zM2FlZWJkMC0xY2Q4LTQ1ZDktODZmYy04NDMxYWExMTQ1MzQucG5nIn1dXX0.qez_vbTifC9eeMQk82mAlDkvPkA4c4-Eidii31-XAvs');
+          background-size: 100% 100%;
+          background-repeat: no-repeat;
+       }
+
+       .stadium > section {
+          display: block;
+          box-sizing: border-box;
+       }
+
+       .stadium > section .char {
+          height: 255px;
+          position: relative;
+       }
+
+       .stadium > section .char > * {
+          position: absolute;
+          text-transform: capitalize;
+       }
+
+       .stadium > section .char img {
+          height: 300px;
+          width: 300px;
+       }
+
+       .stadium > section .char .data {
+          background: #CCC;
+          width: 20vw;
+          padding: 15px 2%;
+          box-sizing: border-box;
+          top: 25px;
+       }
+
+       .stadium > section .char .data progress {
+          width: 100%;
+       }
+
+       .stadium > section .char .data p {
+          text-align: right;
+       }
+
+       .stadium .enemy img {
+          right: 15vw;
+       }
+
+       .stadium .enemy .data {
+          left: 15vw;
+       }
+
+       .stadium .hero img {
+          left: 15vw;
+       }
+
+       .stadium .hero .data {
+          right: 15vw;
+       }
+
+       .attack-list {
+          display: flex;
+          flex-wrap: wrap;
+          background: #fffafa;
+          position: initial;
+          transtion: opacity 0.3s ease;
+          text-transform: capitalize;
+       }
+
+       .attack-list.disabled {
+          opacity: 0.5;
+          position: relative;
+          z-index: -1;
+          cursor: initial;
+       }
+
+       .attack-list li {
+          width: 25%;
+          text-align: center;
+          padding: 25px 0;
+          box-sizing: border-box;
+          border: 1px solid #666;
+          cursor: pointer;
+          transition: background 0.3s ease;
+       }
+
+       .attack-list li {
+          background-color: #e7e7e7;
+          color: black;
+          border: none;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 17px;
+          cursor: pointer;
+       }
+
+       .attack-list li:hover {
+          background-color: #8c8888 !important;
+       }
+
+       .modal-out {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          height: 100vh;
+          width: 100vw;
+          background: rgba(33, 33, 33, 0.75);
+          z-index: 900;
+       }
+
+       .modal-out .modal-in {
+          position: fixed;
+          top: 15vh;
+          left: 0;
+          right: 0;
+          width: 50vw;
+          height: 70vh;
+          margin: 0 auto;
+          background: #fffafa;
+       }
+
+       .modal-out .modal-in header {
+          position: relative;
+          min-height: 30px;
+          text-align: center;
+          padding: 10px 3%;
+          box-sizing: border-box;
+       }
+
+       .modal-out .modal-in header h1 {
+          font-size: 2.2em;
+       }
+
+       .modal-out .modal-in .close {
+          cursor: pointer;
+          position: absolute;
+          top: 13px;
+          right: 13px;
+       }
+
+       .modal-out .modal-in section {
+          box-sizing: border-box;
+          padding: 25px 3%;
+       }
+
+       .container {
+          margin: 0 auto;
+       }
+
+       h1 {
+          text-transform: uppercase;
+          text-align: center;
+          font-size: 54px;
+       }
+
+       #pokedex {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+          grid-gap: 20px;
+          padding-inline-start: 0;
+          cursor: pointer;
+       }
+
+       .card {
+          position: relative;
+          list-style: none;
+          background-color: #f4f4f4;
+          color: #222;
+          text-align: center;
+       }
+
+       .card:hover {
+          animation: bounce 0.5s linear;
+       }
+
+       .card-title {
+          text-transform: capitalize;
+          margin-bottom: 0px;
+          font-size: 32px;
+          font-weight: normal;
+          margin-top: -30px;
+          margin-bottom: 15px;
+       }
+
+       .card:hover .card-title {
+          font-size: 33px;
+       }
+
+       .type {
+          position: absolute;
+          top: 0;
+          right: 5px;
+          z-index: 99;
+       }
+
+       .card-image {
+          height: 225px;
+          width: 225px;
+       }
+
+       @keyframes bounce {
+          20% {
+             transform: translateY(-6px);
+          }
+
+          40% {
+             transform: translateY(0px);
+          }
+
+          80% {
+             transform: translateY(-2px);
+          }
+
+          100% {
+             transform: translateY(0);
+          }
+       }
+
+       .blur-up {
+          -webkit-filter: blur(5px);
+          filter: blur(5px);
+          transition: filter 400ms, -webkit-filter 400ms;
+       }
+
+       .blur-up.lazyloaded {
+          -webkit-filter: blur(0);
+          filter: blur(0);
+       }
+
+       @keyframes ldio-z7s1nkjr2hg-1 {
+          0% {
+             transform: rotate(0deg)
+          }
+
+          50% {
+             transform: rotate(-45deg)
+          }
+
+          100% {
+             transform: rotate(0deg)
+          }
+       }
+
+       @keyframes ldio-z7s1nkjr2hg-2 {
+          0% {
+             transform: rotate(180deg)
+          }
+
+          50% {
+             transform: rotate(225deg)
+          }
+
+          100% {
+             transform: rotate(180deg)
+          }
+       }
+
+       .ldio-z7s1nkjr2hg > div:nth-child(2) {
+          transform: translate(-15px, 0);
+       }
+
+       .ldio-z7s1nkjr2hg > div:nth-child(2) div {
+          position: absolute;
+          top: 40px;
+          left: 40px;
+          width: 120px;
+          height: 60px;
+          border-radius: 120px 120px 0 0;
+          background: #ff3f00;
+          animation: ldio-z7s1nkjr2hg-1 1s linear infinite;
+          transform-origin: 60px 60px
+       }
+
+       .ldio-z7s1nkjr2hg > div:nth-child(2) div:nth-child(2) {
+          animation: ldio-z7s1nkjr2hg-2 1s linear infinite
+       }
+
+       .ldio-z7s1nkjr2hg > div:nth-child(2) div:nth-child(3) {
+          transform: rotate(-90deg);
+          animation: none;
+       }
+
+       @keyframes ldio-z7s1nkjr2hg-3 {
+          0% {
+             transform: translate(190px, 0);
+             opacity: 0
+          }
+
+          20% {
+             opacity: 1
+          }
+
+          100% {
+             transform: translate(70px, 0);
+             opacity: 1
+          }
+       }
+
+       .ldio-z7s1nkjr2hg > div:nth-child(1) {
+          display: block;
+       }
+
+       .ldio-z7s1nkjr2hg > div:nth-child(1) div {
+          position: absolute;
+          top: 92px;
+          left: -8px;
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background: darkgray;
+          animation: ldio-z7s1nkjr2hg-3 1s linear infinite
+       }
+
+       .ldio-z7s1nkjr2hg > div:nth-child(1) div:nth-child(1) {
+          animation-delay: -0.67s
+       }
+
+       .ldio-z7s1nkjr2hg > div:nth-child(1) div:nth-child(2) {
+          animation-delay: -0.33s
+       }
+
+       .ldio-z7s1nkjr2hg > div:nth-child(1) div:nth-child(3) {
+          animation-delay: 0s
+       }
+
+       .loadingio-spinner-bean-eater-cqc1ay6ytcq {
+          width: 200px;
+          height: 200px;
+          display: inline-block;
+          overflow: hidden;
+          background: #ccc;
+       }
+
+       .ldio-z7s1nkjr2hg {
+          width: 100%;
+          height: 100%;
+          position: relative;
+          transform: translateZ(0) scale(1);
+          backface-visibility: hidden;
+          transform-origin: 0 0;
+          /* see note above */
+       }
+
+       .ldio-z7s1nkjr2hg div {
+          box-sizing: content-box;
+       }
+
+       .inbus {
+          text-align: center;
+          padding: 15px;
+          font-size: 17px;
+          border: none;
+          width: 93%;
+          background: white;
+       }
+
+       .inbus:hover {
+          background: #f1f1f1;
+       }
+
+       .inbuse {
+          padding: 8px;
+          font-size: 17px;
+          border: none;
+          width: 50px;
+          background: white;
+       }
+
+       .inbuse:hover {
+          background: #f1f1f1;
+       }
+
+       .buttons {
+          margin-top: 10px;
+       }
+
+       .buttons button {
+          background-color: #e7e7e7;
+          color: black;
+          border: none;
+          padding: 15px 32px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          margin: 4px 2px;
+          cursor: pointer;
+       }
+
+       .buton {
+          background-color: #e7e7e7;
+          color: black;
+          border: none;
+          padding: 10px 20px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          margin: 4px 2px;
+          margin-left: 10px;
+          cursor: pointer;
+       }
+
+       .buttons button:hover {
+          background-color: #8c8888 !important;
+       }
+
+       .dark {
+          background-color: #8c8888 !important;
+       }
+       </style>
+       <link href="https://fonts.googleapis.com/css?family=Rubik&display=swap" rel="stylesheet"/>
+    </head>
+    <body oncontextmenu="return false">
+       <header>
+          <a href="https://pkgame.netlify.app/">
+             <img loading="lazy" class="logo" title="Reset Game" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/International_Pok%C3%A9mon_logo.svg/2000px-International_Pok%C3%A9mon_logo.svg.png" alt="Pokemon">
+          </a>
+       </header>
+       <main>
+          <div class="instructions" style="margin-top:-35px;margin-bottom:-15px">
+             <p style="display: inline-block;">Choose Your Pokemon</p>
+             &nbsp;&nbsp;&nbsp;
+             <span style="font-size: 2em;display: inline-block">
+                (
+                <span class="power">Medium</span>
+                 Mode ~
+                <span class="count" onclick="coocyo()" style="cursor:pointer">150</span>
+                 Pokemon)
+             </span>
+          </div>
+          <center>
+             <div class="loadingio-spinner-bean-eater-cqc1ay6ytcq">
+                <div class="ldio-z7s1nkjr2hg">
+                   <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                   </div>
+                   <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                   </div>
+                </div>
+             </div>
+             <br/>
+             <h3 class="loadingio-spinner-bean-eater-cqc1ay6ytcq">
+                   Loading...
+                 </h3>
+          </center>
+          <div class="container" style="display:none;margin-top:-50px">
+             <div class="overlay-content">
+                <center style="margin-bottom:5px">
+                   <div class="buttons" style="margin-bottom:5px">
+                      <button class="e" onclick="changevar('easy', true, 'e')">Easy (x0.9 Attack Power)</button>
+                      <button class="m dark" onclick="changevar('medium', true, 'm')">Medium (x2 Attack Power)</button>
+                      <button class="h" onclick="changevar('hard', true, 'h')">Hard (x3.5 Attack Power)</button>
+                      <button class="c" onclick="changevar('crazy', true, 'c')">Crazy (x5 Attack Power)</button>
+                      <br/>
+                   </div>
+                   <span style="font-size:2rem">Load</span>
+                   &nbsp;&nbsp;&nbsp;
+                   <input class="inbuse" type="number" id="load" name="load" min="2" max="898" value="150">
+                   &nbsp;&nbsp;&nbsp;
+                   <span style="font-size:2rem">Pokemon</span>
+                   <a class="buton" href="#">Load It!</a>
+                </center>
+                <center>
+                   <form class="form-search">
+                      <input class="inbus input-medium search-query" type="text" placeholder="Search For Pokemon" name="search">
+                   </form>
+                </center>
+             </div>
+             <ul id="pokedex" class="characters"></ul>
+          </div>
+          <section class="stadium" style="margin-top:-45px">
+             <section class="enemy"></section>
+             <section class="hero"></section>
+          </section>
+          <ul class="attack-list"></ul>
+       </main>
+       <div class="audio">
+          <audio class="sfx" loop></audio>
+          <audio class="music" loop></audio>
+       </div>
+       <div class="modal-out">
+          <div class="modal-in">
+             <header></header>
+             <section></section>
+             <footer></footer>
+          </div>
+       </div>
+       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+       <script src="https://cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.min.js"></script>
+       <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+       <script>
+       function coocyo() {
+          document.getElementById("load").focus();
+       }
+       const Toast = Swal.mixin({
+          toast: true,
+          position: 'top-right',
+          iconColor: 'white',
+          customClass: {
+             popup: 'colored-toast'
+          },
+          showConfirmButton: false,
+          timer: 1500,
+          timerProgressBar: false
+       });
+       function percent(num) {
+          var d = Math.random();
+          if (d < num) {
+             return true;
+          } else {
+             return false;
+          }
+       }
+       val = percent(0.3);
+       if (val == true) {
+          console.log("True: " + val);
+       } else {
+          console.log("False: " + val);
+       }
+       $(".buton").hide();
+       $(".inbuse").on('input', function() {
+          vale = $(".inbuse").val();
+          regex = /^[a-zA-Z]+$/;
+          if (isNaN(vale)) {
+             $(".buton").hide();
+             Toast.fire({
+                icon: 'error',
+                title: 'Cannot load NaN of Pokemon'
+             });
+          }
+          if ($(".inbuse").val() < 2) {
+             $(".buton").hide();
+             Toast.fire({
+                icon: 'error',
+                title: 'Cannot load less than 2 Pokemon'
+             });
+          } else if ($(".inbuse").val() < 899) {
+             $(".buton").show();
+             url = window.location.href.split('?')[0] + "?load=" + vale;
+             $(".buton").attr("href", url);
+          } else {
+             $(".buton").hide();
+             Toast.fire({
+                icon: 'error',
+                title: 'Cannot load more than 898 Pokemon'
+             });
+          }
+       });
+       level = "medium";
+       function updateResults() {
+          var query = $.trim($('.search-query').val()).toLowerCase();
+          $('li.card.char-container .card-title').each(function() {
+             var $this = $(this);
+             if ($this.text().toLowerCase().indexOf(query) === -1)
+                $this.closest('li.card.char-container').fadeOut();
+             else
+                $this.closest('li.card.char-container').fadeIn();
+          });
+       }
+       function camelize(str) {
+          return str.replace(/\w\S*/g, function(txt) {
+             return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+          });
+       }
+       function changevar(str, btn, ie) {
+          if (btn == false) {
+             if ($.cookie('power')) {
+                if ($.cookie('power') == "easy") {
+                   $(".power").html(camelize("easy"));
+                   $(".m").removeClass("dark");
+                   $(".e").addClass("dark");
+                   level = "easy";
+                } else if ($.cookie('power') == "medium") {
+                   $(".power").html(camelize("medium"));
+                   level = "medium";
+                } else if ($.cookie('power') == "hard") {
+                   $(".m").removeClass("dark");
+                   $(".h").addClass("dark");
+                   $(".power").html(camelize("hard"));
+                   level = "hard";
+                } else if ($.cookie('power') == "crazy") {
+                   $(".m").removeClass("dark");
+                   $(".c").addClass("dark");
+                   $(".power").html(camelize("crazy"));
+                   level = "crazy";
+                }
+             } else {
+                $(".power").html(camelize(str));
+                $.cookie('power', str, {
+                   expires: 7,
+                   path: '/'
+                });
+                level = str;
+             }
+          } else {
+             $(".e").removeClass("dark");
+             $(".c").removeClass("dark");
+             $(".m").removeClass("dark");
+             $(".h").removeClass("dark");
+             $("." + ie).addClass("dark");
+             $(".power").html(camelize(str));
+             $.cookie('power', str, {
+                expires: 7,
+                path: '/'
+             });
+             level = str;
+          }
+       }
+       changevar("medium", false, "m");
+       $('.form-search').on('submit', function() {
+          return false;
+       });
+       $('.form-search .btn').on('click', updateResults);
+       $('.search-query').on('input', updateResults);
+       var music = {},
+          typeSprite = "",
+          types = [],
+          gameData = {};
+       (attackName = ""), (curAttack = {}), (randInt = 0), (enemyAttack = {}), (characters = []), (defendProgressInt = null), (defendProgressComplete = 0), (progressInt = null), (progressComplete = 0);
+       function buildVars(_callback) {
+          music = {
+             opening: "https://vgmsite.com/soundtracks/pokemon-gameboy-sound-collection/ftcsbcug/103-professor%20oak.mp3",
+             battle: "https://vgmsite.com/soundtracks/pokemon-sword-shield-ost/hmvtjhqwde/10%20-%20Battle%21%20%28Wild%20Pokémon%29.mp3",
+             victory: "https://vgmsite.com/soundtracks/pokemon-sword-shield-ost/sbshdutavy/12%20-%20Level%20Up%21.mp3"
+          };
+          typeSprite = "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/b3c54c95-8c44-4e5b-93ae-389fe559bcbf/d3agp02-2859ed66-7bdb-4a62-9adf-a53765d36996.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwic3ViIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsImF1ZCI6WyJ1cm46c2VydmljZTpmaWxlLmRvd25sb2FkIl0sIm9iaiI6W1t7InBhdGgiOiIvZi9iM2M1NGM5NS04YzQ0LTRlNWItOTNhZS0zODlmZTU1OWJjYmYvZDNhZ3AwMi0yODU5ZWQ2Ni03YmRiLTRhNjItOWFkZi1hNTM3NjVkMzY5OTYucG5nIn1dXX0.eKwCMj324a8jQcdJeU6bHI00pkoU3gECOlu_hR7qED4";
+          types = ["bug", "dark", "dragon", "electric", "fairy", "fighting", "fire", "flying", "ghost", "grass", "ground", "ice", "normal", "poison", "psychic", "rock", "steel", "water"];
+          gameData = {
+             step: 1,
+             hero: {},
+             enemy: {}
+          };
+          attackName = "";
+          curAttack = {};
+          randInt = 0;
+          enemyAttack = {};
+          defendProgressInt = null;
+          defendProgressComplete = 0;
+          progressInt = null;
+          progressComplete = 0;
+          characters = "nyll";
+          const fetchPokemon = (_callback) => {
+             const promises = [];
+             const urlParams = new URLSearchParams(window.location.search);
+             load = urlParams.get('load');
+             if (load) {
+                $(".inbuse").attr("value", load);
+                $(".count").html(load);
+                for (let i = 1; i <= load; i++) {
+                   const url = `https://pokeapi.co/api/v2/pokemon/${i}`;
+                   promises.push(fetch(url, {
+                      cache: "force-cache"
+                   }).then((res) => res.json()));
+                }
+             } else {
+                for (let i = 1; i <= 150; i++) {
+                   const url = `https://pokeapi.co/api/v2/pokemon/${i}`;
+                   promises.push(fetch(url, {
+                      cache: "force-cache"
+                   }).then((res) => res.json()));
+                }
+             }
+             Promise.all(promises).then((results) => {
+                const pokemon = results.map((result) => ({
+                   name: result.name,
+                   weakness: ["fighting"],
+                   resistance: ["steel"],
+                   type: result.types.map((type) => type.type.name).join(', '),
+                   img: {
+                      default: result.sprites.front_default,
+                      front: result.sprites.front_default,
+                      back: result.sprites.back_default
+                   },
+                   attack: result.moves.map((move) => move.move.name).join(', '),
+                   hp: {
+                      current: 2000,
+                      total: 2000
+                   },
+                   attacks: [{
+                      name: "low kick",
+                      hp: randomNum(40, 20),
+                      avail: {
+                         total: 30,
+                         remaining: 30
+                      }
+                   }, {
+                      name: "karate chop",
+                      hp: randomNum(60, 45),
+                      avail: {
+                         total: 10,
+                         remaining: 10
+                      }
+                   }, {
+                      name: "seismic toss",
+                      hp: randomNum(75, 60),
+                      avail: {
+                         total: 5,
+                         remaining: 5
+                      }
+                   }, {
+                      name: "hundred furious punches",
+                      hp: randomNum(160, 130),
+                      avail: {
+                         total: 2,
+                         remaining: 2
+                      }
+                   }, ],
+                   id: result.id,
+                   hide: false,
+                   exp: result.base_experience,
+                   power: 0
+                }));
+                for (let p of pokemon) {
+                   if (p.exp < 75) {
+                      p.power = 1;
+                      p.hp = {
+                         current: 1750,
+                         total: 1750,
+                      };
+                   } else if (p.exp > 200) {
+                      p.power = 1.3;
+                      p.hp = {
+                         current: 3000,
+                         total: 3000,
+                      };
+                   } else if (p.exp > 115) {
+                      p.power = 1.2;
+                      p.hp = {
+                         current: 2500,
+                         total: 2500,
+                      };
+                   } else if (p.exp > 74) {
+                      p.power = 1.1;
+                      p.hp = {
+                         current: 2250,
+                         total: 2250,
+                      };
+                   }
+                   if (p.type.includes(",")) {
+                      ci = p.type;
+                      ch = ci.substr(0, ci.indexOf(','));
+                      if (ch.includes("normal")) {
+                         p.weakness = ["rock", "ghost", "steel"];
+                         p.resistance = [];
+                      }
+                      if (ch.includes("fighting")) {
+                         p.resistance = ["normal", "rock", "steel", "ice", "dark"];
+                         p.weakness = ["flying", "psychic", "poison", "bug", "ghost", "fairy"];
+                      }
+                      if (ch.includes("flying")) {
+                         p.resistance = ["fighting", "bug", "grass"];
+                         p.weakness = ["rock", "steel", "electric"];
+                      }
+                      if (ch.includes("poison")) {
+                         p.resistance = ["grass", "fairy"];
+                         p.weakness = ["rock", "ground", "rock", "ghost", "steel"];
+                      }
+                      if (ch.includes("ground")) {
+                         p.resistance = ["poison", "rock", "steel", "fire", "electric"];
+                         p.weakness = ["flying", "bug", "grass"];
+                      }
+                      if (ch.includes("rock")) {
+                         p.resistance = ["flying", "bug", "fire", "ice"];
+                         p.weakness = ["fighting", "ground", "steel"];
+                      }
+                      if (ch.includes("bug")) {
+                         p.weakness = ["fighting", "flying", "poison", "ghost", "steel", "fire", "fairy"];
+                         p.resistance = ["grass", "psychic", "dark"];
+                      }
+                      if (ch.includes("ghost")) {
+                         p.resistance = ["psychic"];
+                         p.weakness = ["normal", "dark"];
+                      }
+                      if (ch.includes("steel")) {
+                         p.resistance = ["ice", "rock", "fairy"];
+                         p.weakness = ["fire", "water", "electric"];
+                      }
+                      if (ch.includes("fire")) {
+                         p.resistance = ["bug", "steel", "grass", "ice"];
+                         p.weakness = ["water", "rock", "dragon"];
+                      }
+                      if (ch.includes("water")) {
+                         p.resistance = ["ground", "rock", "fire"];
+                         p.weakness = ["dragon", "grass"];
+                      }
+                      if (ch.includes("grass")) {
+                         p.resistance = ["ground", "rock", "water"];
+                         p.weakness = ["flying", "poison", "bug", "steel", "fire", "dragon"];
+                      }
+                      if (ch.includes("electric")) {
+                         p.resistance = ["flying", "water"];
+                         p.weakness = ["ground", "grass", "dragon"];
+                      }
+                      if (ch.includes("ice")) {
+                         p.resistance = ["psychic", "ground", "grass", "dragon"];
+                         p.weakness = ["steel", "fire", "water"];
+                      }
+                      if (ch.includes("psychic")) {
+                         p.resistance = ["fighting", "poison"];
+                         p.weakness = ["steel", "dark"];
+                      }
+                      if (ch.includes("dragon")) {
+                         p.resistance = [];
+                         p.weakness = ["steel", "fairy"];
+                      }
+                      if (ch.includes("fairy")) {
+                         p.resistance = ["fighting", "dragon", "dark"];
+                         p.weakness = ["poison", "steel", "fire"];
+                      }
+                      if (ch.includes("dark")) {
+                         p.resistance = ["ghost", "psychic"];
+                         p.weakness = ["fighting", "fairy"];
+                      }
+                   } else {
+                      ch = p.type;
+                      if (ch.includes("normal")) {
+                         p.weakness = ["rock", "ghost", "steel"];
+                         p.resistance = [];
+                      }
+                      if (ch.includes("fighting")) {
+                         p.resistance = ["normal", "rock", "steel", "ice", "dark"];
+                         p.weakness = ["flying", "psychic", "poison", "bug", "ghost", "fairy"];
+                      }
+                      if (ch.includes("flying")) {
+                         p.resistance = ["fighting", "bug", "grass"];
+                         p.weakness = ["rock", "steel", "electric"];
+                      }
+                      if (ch.includes("poison")) {
+                         p.resistance = ["grass", "fairy"];
+                         p.weakness = ["rock", "ground", "rock", "ghost", "steel"];
+                      }
+                      if (ch.includes("ground")) {
+                         p.resistance = ["poison", "rock", "steel", "fire", "electric"];
+                         p.weakness = ["flying", "bug", "grass"];
+                      }
+                      if (ch.includes("rock")) {
+                         p.resistance = ["flying", "bug", "fire", "ice"];
+                         p.weakness = ["fighting", "ground", "steel"];
+                      }
+                      if (ch.includes("bug")) {
+                         p.weakness = ["fighting", "flying", "poison", "ghost", "steel", "fire", "fairy"];
+                         p.resistance = ["grass", "psychic", "dark", "normal"];
+                      }
+                      if (ch.includes("ghost")) {
+                         p.resistance = ["psychic"];
+                         p.weakness = ["normal", "dark"];
+                      }
+                      if (ch.includes("steel")) {
+                         p.resistance = ["ice", "rock", "fairy"];
+                         p.weakness = ["fire", "water", "electric"];
+                      }
+                      if (ch.includes("fire")) {
+                         p.resistance = ["bug", "steel", "grass", "ice"];
+                         p.weakness = ["water", "rock", "dragon"];
+                      }
+                      if (ch.includes("water")) {
+                         p.resistance = ["ground", "rock", "fire"];
+                         p.weakness = ["dragon", "grass"];
+                      }
+                      if (ch.includes("grass")) {
+                         p.resistance = ["ground", "rock", "water"];
+                         p.weakness = ["flying", "poison", "bug", "steel", "fire", "dragon"];
+                      }
+                      if (ch.includes("electric")) {
+                         p.resistance = ["flying", "water"];
+                         p.weakness = ["ground", "grass", "dragon"];
+                      }
+                      if (ch.includes("ice")) {
+                         p.resistance = ["psychic", "ground", "grass", "dragon"];
+                         p.weakness = ["steel", "fire", "water"];
+                      }
+                      if (ch.includes("psychic")) {
+                         p.resistance = ["fighting", "poison"];
+                         p.weakness = ["steel", "dark"];
+                      }
+                      if (ch.includes("dragon")) {
+                         p.resistance = [];
+                         p.weakness = ["steel", "fairy"];
+                      }
+                      if (ch.includes("fairy")) {
+                         p.resistance = ["fighting", "dragon", "dark"];
+                         p.weakness = ["poison", "steel", "fire"];
+                      }
+                      if (ch.includes("dark")) {
+                         p.resistance = ["ghost", "psychic"];
+                         p.weakness = ["fighting", "fairy"];
+                      }
+                   }
+                   a = p.attack;
+                   arr = a.split(",");
+                   arr.splice(arr.indexOf("return"), 1);
+                   arr.splice(arr.indexOf("rest"), 1);
+                   arr.splice(arr.indexOf("protect"), 1);
+                   arr.splice(arr.indexOf("attract"), 1);
+                   arr.splice(arr.indexOf("reflect"), 1);
+                   arr.splice(arr.indexOf("substitute"), 1);
+                   if (arr.length == 0) {
+                      p.hide = true;
+                   }
+                   if (arr.length > 0) {
+                      random1 = randomNum(0, arr.length);
+                   }
+                   if (arr.length > 25) {
+                      random2 = randomNum(25, arr.length);
+                   } else {
+                      random2 = randomNum(0, arr.length);
+                   }
+                   if (arr.length > 50) {
+                      random3 = randomNum(50, arr.length);
+                   } else {
+                      random2 = randomNum(0, arr.length);
+                   }
+                   if (arr.length > 75) {
+                      random4 = randomNum(0, arr.length);
+                   } else {
+                      random4 = randomNum(75, arr.length);
+                   }
+                   try {
+                      far = arr[random1].replace(/\s/g, '');
+                   } catch (err) {
+                      far = "pound";
+                   }
+                   try {
+                      tar = arr[random2].replace(/\s/g, '');
+                   } catch (err) {
+                      tar = "tackle";
+                   }
+                   try {
+                      thar = arr[random3].replace(/\s/g, '');
+                   } catch (err) {
+                      thar = "scratch";
+                   }
+                   try {
+                      foar = arr[random4].replace(/\s/g, '');
+                   } catch (err) {
+                      foar = "slam";
+                   }
+                   attackse = [{
+                      name: far,
+                      maxhp: 40,
+                      lowhp: 20,
+                      hp: randomNum(40, 20),
+                      avail: {
+                         total: 25,
+                         remaining: 25
+                      },
+                      fail: 0.9
+                   }, {
+                      name: tar,
+                      maxhp: 60,
+                      lowhp: 45,
+                      hp: randomNum(60, 45),
+                      avail: {
+                         total: 20,
+                         remaining: 20
+                      },
+                      fail: 0.8
+                   }, {
+                      name: thar,
+                      maxhp: 75,
+                      lowhp: 60,
+                      hp: randomNum(75, 60),
+                      avail: {
+                         total: 10,
+                         remaining: 10
+                      },
+                      fail: 0.6
+                   }, {
+                      name: foar,
+                      maxhp: 160,
+                      lowhp: 130,
+                      hp: randomNum(160, 130),
+                      avail: {
+                         total: 5,
+                         remaining: 5
+                      },
+                      fail: 0.5
+                   }, ]
+                   p.attacks = attackse;
+                }
+                displayPokemon(pokemon);
+                _callback();
+             });
+          };
+          const displayPokemon = (pokemon) => {
+             characters = pokemon;
+          };
+          fetchPokemon(function() {
+             _callback();
+          });
+       }
+       function randomNum(max, min) {
+          if (min === undefined || min === "" || min === null) {
+             min = 0;
+          }
+          return Math.floor(Math.random() * (max - min) + min);
+       }
+       function populateChar(container, character) {
+          var facing = "front";
+          if (character === "hero") {
+             facing = "back";
+          }
+          container.append('<section class="char"><img loading="lazy" src="' + gameData[character].img[facing] + '" alt="' + gameData[character].name + '" width="200" height="200"><aside class="data"><h2>' + gameData[character].name + '</h2><div><h5 style="margin-top:-15px;margin-bottom:-5px" id="attack' + gameData[character].name + '">Last Attack: None</h5><p><span id="' + character + '-attacks">' + gameData[character].hp.current + "</span>/" + gameData[character].hp.total + "</p></div></aside></section>");
+       }
+       function attackMultiplier(attacker, curAttack) {
+          var defender = "enemy";
+          if (attacker === "enemy") {
+             defender = "hero";
+          }
+          curAttack.hp *= gameData[attacker].power;
+          attackserer = camelize(gameData[attacker].name + ' uses ' + curAttack.name + '!');
+          geyt = "#attack" + gameData[attacker].name;
+          coret = "Last Attack: " + attackserer;
+          $(geyt).html(coret);
+          if (attacker == "enemy") {
+             if (level == "easy") {
+                curAttack.hp *= 0.9;
+             } else if (level == "medium") {
+                curAttack.hp *= 2;
+             } else if (level == "hard") {
+                curAttack.hp *= 3.5;
+             } else if (level == "crazy") {
+                curAttack.hp *= 5;
+             }
+          }
+          if (gameData[defender].weakness.includes(gameData[attacker].type) >= 0) {
+             curAttack.hp *= 2;
+             if (curAttack.hp < 400) {
+                if (attacker != "enemy") {
+                   Toast.fire({
+                      icon: 'info',
+                      title: 'Strong Attack! (Type Advantage)'
+                   });
+                }
+             } else {
+                Toast.fire({
+                   icon: 'info',
+                   title: 'Critical Attack!'
+                });
+             }
+          }
+          if (gameData[defender].resistance.indexOf(gameData[attacker].type) >= 0) {
+             curAttack.hp /= 2;
+             if (curAttack.hp < 400) {
+                if (attacker != "enemy") {
+                   Toast.fire({
+                      icon: 'info',
+                      title: 'Weak Attack! (Type Disadvantage)'
+                   });
+                }
+             } else {
+                Toast.fire({
+                   icon: 'info',
+                   title: 'Critical Attack!'
+                });
+             }
+          }
+          curAttack.hp = Math.floor(curAttack.hp);
+          return curAttack.hp;
+       }
+       function setHP() {
+          clearInterval(defendProgressInt);
+          clearInterval(progressInt);
+       }
+       function resetGame() {
+          $(".loadingio-spinner-bean-eater-cqc1ay6ytcq").show();
+          $(".container").hide();
+          $(".stadium").hide();
+          $(".attack-list").hide();
+          buildVars(function() {
+             $(".hero").empty();
+             $(".enemy").empty();
+             $(".attack-list li").unbind("click");
+             $(".attack-list").empty();
+             $(".stadium .enemy").css({
+                padding: "0"
+             });
+             $(".instructions p").text("Choose Your Pokemon");
+             Toast.fire({
+                icon: 'info',
+                title: 'Choose Your Pokemon!'
+             });
+             $(".loadingio-spinner-bean-eater-cqc1ay6ytcq").hide();
+             $(".container").show();
+             $(".stadium").show();
+             $(".attack-list").show();
+             $(".characters").empty();
+             $(".characters").removeClass("hidden");
+             for (var i in characters) {
+                if (characters[i].type.includes(",")) {
+                   ci = characters[i].type;
+                   ch = ci.substr(0, ci.indexOf(','));
+                } else {
+                   ch = characters[i].type;
+                }
+                if (characters[i].hide == false) {
+                   $(".characters").append('<li class="card char-container"><img class="lazyload blur-up card-image" loading="lazy" data-src="' + characters[i].img["default"] + '" alt="' + characters[i].name + '"><h2 class="card-title">' + characters[i].name + '</h2><p>' + characters[i].type + '</p><span class="id">' + characters[i].id + '</span><span class="type ' + ch + '"></span></li>');
+                }
+             }
+             characterChoice();
+          });
+       }
+       resetGame();
+       $(".logo").click(function() {
+          resetGame();
+       });
+       function characterChoice() {
+          $(".characters .char-container").click(function() {
+             var name = $(this).children("h2").text().toLowerCase();
+             switch (gameData.step) {
+             case 1:
+                for (var i in characters) {
+                   if (characters[i].name === name) {
+                      gameData.hero = characters[i];
+                   }
+                }
+                var char = $(this).remove();
+                populateChar($(".stadium .hero"), "hero");
+                for (var i in gameData.hero.attacks) {
+                   $(".attack-list").append('<li><p class="attack-name"><strong>' + gameData.hero.attacks[i].name + '</strong></p><p class="attack-count"><small><span>' + gameData.hero.attacks[i].avail.remaining + "</span>/" + gameData.hero.attacks[i].avail.total + " Attacks<br/>" + gameData.hero.attacks[i].fail * 100 + "% Success<br/>" + gameData.hero.attacks[i].lowhp / 2 + "-" + gameData.hero.attacks[i].lowhp * 8 + " Attack Power</small></p></li>");
+                }
+                $(".attack-list").addClass("disabled");
+                $(".instructions p").text("Choose Your Opponent");
+                Toast.fire({
+                   icon: 'info',
+                   title: 'Choose Your Opponent!'
+                });
+                gameData.step = 2;
+                break;
+             case 2:
+                for (var i in characters) {
+                   if (characters[i].name === name) {
+                      gameData.enemy = characters[i];
+                   }
+                }
+                var char = $(this).remove();
+                populateChar($(".stadium .enemy"), "enemy");
+                $(".stadium .enemy").css({
+                   padding: "25px 0"
+                });
+                $(".instructions p").text("Battle!");
+                Toast.fire({
+                   icon: 'info',
+                   title: 'Battle!'
+                });
+                $(".container").hide();
+                gameData.step = 3;
+                ttl = gameData.hero.hp.total;
+                gameData.hero.hp.current = ttl;
+                gameData.hero.hp.total = ttl;
+                $("#hero-attacks").text(ttl);
+                ttle = gameData.enemy.hp.total;
+                gameData.enemy.hp.current = ttle;
+                gameData.enemy.hp.total = ttle;
+                $("#enemy-attacks").text(ttle);
+                attackList();
+                break;
+             }
+          });
+       }
+       function attackEnemy(that, callback) {
+          attackName = that.children(".attack-name").children("strong").text().toLowerCase();
+          for (var i in gameData.hero.attacks) {
+             if (gameData.hero.attacks[i].name === attackName) {
+                curAttack = gameData.hero.attacks[i];
+             }
+          }
+          if (curAttack.avail.remaining > 0) {
+             $(".attack-list").addClass("disabled");
+             attac = percent(curAttack.fail);
+             if (attac == true) {
+                gameData.enemy.hp.current -= attackMultiplier("hero", curAttack);
+                $(".hero .char img").animate({
+                   "margin-left": "-30px",
+                   "margin-top": "10px"
+                }, 50, "swing");
+                $(".hero .char img").animate({
+                   "margin-left": "30px",
+                   "margin-top": "-10px"
+                }, 50, "swing");
+                $(".hero .char img").animate({
+                   "margin-left": "0px",
+                   "margin-top": "0px"
+                }, 50, "swing");
+             } else {
+                Toast.fire({
+                   icon: 'error',
+                   title: 'Miss Attack!'
+                });
+             }
+             if (gameData.enemy.hp.current <= 0) {
+                clearModal();
+                $(".modal-in header").append('<h1>You Won!</h1><span class="close">x</span>');
+                $(".modal-in section").append("<h3>Congratulations! You won using " + gameData.hero.name + ". Now try battling using another pokemon!</h3>");
+                $(".modal-out").slideDown("400");
+                modalControls();
+                gameData.hero.hp.current = 0;
+                $(".container").show();
+                resetGame();
+             } else {
+                curAttack.avail.remaining--;
+                progressInt = setInterval(function() {
+                   var val = $(".stadium .enemy progress").val();
+                   val--;
+                   $(".stadium .enemy progress").val(val);
+                   if (val === gameData.enemy.hp.current) {
+                      clearInterval(progressInt);
+                      progressComplete = 1;
+                   }
+                }, 1);
+                $(".stadium .enemy .data p span").text(gameData.enemy.hp.current);
+                that.children(".attack-count").children("small").children("span").text(curAttack.avail.remaining);
+                setTimeout(function() {
+                   defend(that);
+                }, 1e3);
+             }
+          }
+       }
+       function defend(that) {
+          randInt = randomNum(gameData.enemy.attacks.length);
+          enemyAttack = gameData.enemy.attacks[randInt];
+          $(".enemy .char img").animate({
+             "margin-right": "-30px",
+             "margin-top": "-10px"
+          }, 50, "swing");
+          $(".enemy .char img").animate({
+             "margin-right": "30px",
+             "margin-top": "10px"
+          }, 50, "swing");
+          $(".enemy .char img").animate({
+             "margin-right": "0px",
+             "margin-top": "0px"
+          }, 50, "swing");
+          gameData.hero.hp.current -= attackMultiplier("enemy", enemyAttack);
+          if (gameData.hero.hp.current <= 0) {
+             clearModal();
+             $(".modal-in header").append('<h1>You Lost</h1><span class="close">x</span>');
+             $(".modal-in section").append("<p>You lost, want to try again and play?");
+             $(".modal-out").slideDown("400");
+             modalControls();
+             gameData.hero.hp.current = 0;
+             $(".container").show();
+             resetGame();
+          } else {
+             gameData.enemy.attacks[randInt].avail.remaining--;
+             defendProgressInt = setInterval(function() {
+                var val = $(".stadium .hero progress").val();
+                val--;
+                $(".stadium .hero progress").val(val);
+                if (val === gameData.hero.hp.current) {
+                   clearInterval(defendProgressInt);
+                   defendProgressComplete = 1;
+                }
+             }, 1);
+             $(".stadium .hero .data p span").text(gameData.hero.hp.current);
+             setTimeout(function() {
+                if (defendProgressComplete && progressComplete) {
+                   $(".attack-list").removeClass("disabled");
+                } else {
+                   setHP();
+                   $(".attack-list").removeClass("disabled");
+                }
+             }, 500);
+          }
+       }
+       function attackList() {
+          $(".attack-list").removeClass("disabled");
+          $(".attack-list li").click(function() {
+             var doAttack = 1;
+             if (gameData.step === 3) {
+                attackEnemy($(this));
+             }
+          });
+       }
+       function modalControls() {
+          $(".modal-out").click(function() {
+             $(this).slideUp("400");
+          });
+          $(".modal-in .close").click(function(e) {
+             $(".modal-out").slideUp("400");
+          });
+          $(".modal-in").click(function(e) {
+             e.stopPropagation();
+             e.preventDefault();
+          });
+       }
+       function clearModal() {
+          $(".modal-in header").empty();
+          $(".modal-in section").empty();
+          $(".modal-in footer").empty();
+          setHP();
+       }
+       </script>
+       <script async src="https://cdn.jsdelivr.net/gh/aFarkas/lazysizes/lazysizes.min.js"></script>
+       <script async src="https://cdn.jsdelivr.net/gh/Dheirya/Sharing-Menu@v1.2.3/sharemenu.js"></script>
+    </body>
+</html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Stacking Game</title>
+        <style>
+            @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap");
+            body {
+                margin: 0;
+                color: white;
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                cursor: pointer;
+            }
+            #instructions {
+                display: none;
+            }
+            #results,
+            body:hover #instructions {
+                position: absolute;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+                width: 100%;
+                background-color: rgba(20, 20, 20, 0.75);
+            }
+            a:visited {
+                color: inherit;
+            }
+            #results {
+                display: none;
+                cursor: default;
+            }
+            #results .content,
+            #instructions .content {
+                max-width: 300px;
+                padding: 50px;
+                border-radius: 20px;
+            }
+            #score {
+                position: absolute;
+                color: white;
+                font-size: 3em;
+                font-weight: bold;
+                top: 30px;
+                right: 30px;
+            }
+            #youtube,
+            #skillshare,
+            #youtube-card,
+            #skillshare-card {
+                display: none;
+                color: black;
+            }
+            @media (min-height: 425px) {
+                #youtube,
+                #skillshare {
+                    z-index: 50;
+                    width: 100px;
+                    height: 70px;
+                    position: fixed;
+                    bottom: 20px;
+                    transform: scale(0.8);
+                    transition: transform 0.5s;
+                }
+                #youtube {
+                    display: block;
+                    background: red;
+                    right: 20px;
+                    border-radius: 50% / 11%;
+                }
+                #skillshare {
+                    display: block;
+                    left: 20px;
+                    color: white;
+                    font-size: 1.8em;
+                    font-weight: extra-bold;
+                    font-family: "Montserrat", sans-serif;
+                    text-decoration: none;
+                }
+                #youtube:hover,
+                #youtube:focus {
+                    transform: scale(0.9);
+                    color: black;
+                }
+                #skillshare:hover,
+                #skillshare:focus {
+                    transform: scale(0.9);
+                    color: #002333;
+                }
+                #youtube::before {
+                    content: "";
+                    display: block;
+                    position: absolute;
+                    top: 7.5%;
+                    left: -6%;
+                    width: 112%;
+                    height: 85%;
+                    background: red;
+                    border-radius: 9% / 50%;
+                }
+                #youtube::after {
+                    content: "";
+                    display: block;
+                    position: absolute;
+                    top: 20px;
+                    left: 40px;
+                    width: 45px;
+                    height: 30px;
+                    border: 15px solid transparent;
+                    box-sizing: border-box;
+                    border-left: 30px solid white;
+                }
+                #youtube span {
+                    font-size: 0;
+                    position: absolute;
+                    width: 0;
+                    height: 0;
+                    overflow: hidden;
+                }
+                #youtube:hover + #youtube-card,
+                #skillshare:hover + #skillshare-card {
+                    z-index: 49;
+                    display: block;
+                    position: fixed;
+                    bottom: 12px;
+                    width: 300px;
+                    background-color: white;
+                }
+                #youtube:hover + #youtube-card {
+                    right: 10px;
+                    padding: 25px 130px 25px 25px;
+                }
+                #skillshare:hover + #skillshare-card {
+                    left: 10px;
+                    padding: 25px 25px 25px 130px;
+                }
+            }
+        </style>
+    </head>
+    <body oncontextmenu="return false">
+        <div id="instructions">
+            <div class="content">
+                <p>Stack the blocks on top of each other</p>
+                <p>Click, tap or press Space when a block is above the stack. Can you reach the blue color blocks?</p>
+                <p>Click, tap or press Space to start game</p>
+            </div>
+        </div>
+        <div id="results">
+            <div class="content">
+                <p>You missed the block</p>
+                <p>To reset the game press R</p>
+                <p style="display: none;">
+                    Follow me
+                    <a href="https://twitter.com/HunorBorbely" target="_blank">@HunorBorbely</a>
+                </p>
+            </div>
+        </div>
+        <div id="score">0</div>
+        <a style="display: none;" id="youtube" target="_blank" href="https://youtu.be/hBiGFpBle7E">
+            <span>Learn Three.js + Cannon.js</span>
+        </a>
+        <div style="display: none;" id="youtube-card">
+            Learn Three.js + Cannon.js while building this game
+        </div>
+        <a style="display: none;" id="skillshare" target="_blank" href="https://skl.sh/3uREVvq">
+            SKILL SHARE
+        </a>
+        <div style="display: none;" id="skillshare-card">
+            Learn Three.js + Cannon.js while building this game (free course)
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r124/three.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
+        <script>
+            let camera, scene, renderer, world, lastTime, stack, overhangs;
+            window.focus();
+            const boxHeight = 1,
+                originalBoxSize = 3;
+            let autopilot, gameEnded, robotPrecision;
+            const scoreElement = document.getElementById("score"),
+                instructionsElement = document.getElementById("instructions"),
+                resultsElement = document.getElementById("results");
+            function setRobotPrecision() {
+                robotPrecision = 1 * Math.random() - 0.5;
+            }
+            function init() {
+                (autopilot = !0),
+                    (gameEnded = !1),
+                    (lastTime = 0),
+                    (stack = []),
+                    (overhangs = []),
+                    setRobotPrecision(),
+                    (world = new CANNON.World()).gravity.set(0, -10, 0),
+                    (world.broadphase = new CANNON.NaiveBroadphase()),
+                    (world.solver.iterations = 40);
+                const e = 10 / (window.innerWidth / window.innerHeight);
+                (camera = new THREE.OrthographicCamera(-5, 5, e / 2, e / -2, 0, 100)).position.set(4, 4, 4),
+                    camera.lookAt(0, 0, 0),
+                    (scene = new THREE.Scene()),
+                    addLayer(0, 0, originalBoxSize, originalBoxSize),
+                    addLayer(-10, 0, originalBoxSize, originalBoxSize, "x");
+                const n = new THREE.AmbientLight(16777215, 0.6);
+                scene.add(n);
+                const t = new THREE.DirectionalLight(16777215, 0.6);
+                t.position.set(10, 20, 0),
+                    scene.add(t),
+                    (renderer = new THREE.WebGLRenderer({ antialias: !0 })).setSize(window.innerWidth, window.innerHeight),
+                    renderer.setAnimationLoop(animation),
+                    document.body.appendChild(renderer.domElement);
+            }
+            function startGame() {
+                if (
+                    ((autopilot = !1),
+                    (gameEnded = !1),
+                    (lastTime = 0),
+                    (stack = []),
+                    (overhangs = []),
+                    instructionsElement && (instructionsElement.style.display = "none"),
+                    resultsElement && (resultsElement.style.display = "none"),
+                    scoreElement && (scoreElement.innerText = 0),
+                    world)
+                )
+                    for (; world.bodies.length > 0; ) world.remove(world.bodies[0]);
+                if (scene) {
+                    for (; scene.children.find((e) => "Mesh" == e.type); ) {
+                        const e = scene.children.find((e) => "Mesh" == e.type);
+                        scene.remove(e);
+                    }
+                    addLayer(0, 0, originalBoxSize, originalBoxSize), addLayer(-10, 0, originalBoxSize, originalBoxSize, "x");
+                }
+                camera && (camera.position.set(4, 4, 4), camera.lookAt(0, 0, 0));
+            }
+            function addLayer(e, n, t, o, i) {
+                const s = generateBox(e, boxHeight * stack.length, n, t, o, !1);
+                (s.direction = i), stack.push(s);
+            }
+            function addOverhang(e, n, t, o) {
+                const i = generateBox(e, boxHeight * (stack.length - 1), n, t, o, !0);
+                overhangs.push(i);
+            }
+            function generateBox(e, n, t, o, i, s) {
+                const r = new THREE.BoxGeometry(o, boxHeight, i),
+                    a = new THREE.Color(`hsl(${30 + 4 * stack.length}, 100%, 50%)`),
+                    d = new THREE.MeshLambertMaterial({ color: a }),
+                    c = new THREE.Mesh(r, d);
+                c.position.set(e, n, t), scene.add(c);
+                const l = new CANNON.Box(new CANNON.Vec3(o / 2, boxHeight / 2, i / 2));
+                let h = s ? 5 : 0;
+                (h *= o / originalBoxSize), (h *= i / originalBoxSize);
+                const p = new CANNON.Body({ mass: h, shape: l });
+                return p.position.set(e, n, t), world.addBody(p), { threejs: c, cannonjs: p, width: o, depth: i };
+            }
+            function cutBox(e, n, t, o) {
+                const i = e.direction,
+                    s = "x" == i ? n : e.width,
+                    r = "z" == i ? n : e.depth;
+                (e.width = s), (e.depth = r), (e.threejs.scale[i] = n / t), (e.threejs.position[i] -= o / 2), (e.cannonjs.position[i] -= o / 2);
+                const a = new CANNON.Box(new CANNON.Vec3(s / 2, boxHeight / 2, r / 2));
+                (e.cannonjs.shapes = []), e.cannonjs.addShape(a);
+            }
+            function eventHandler() {
+                autopilot ? startGame() : splitBlockAndAddNextOneIfOverlaps();
+            }
+            function splitBlockAndAddNextOneIfOverlaps() {
+                if (gameEnded) return;
+                const e = stack[stack.length - 1],
+                    n = stack[stack.length - 2],
+                    t = e.direction,
+                    o = "x" == t ? e.width : e.depth,
+                    i = e.threejs.position[t] - n.threejs.position[t],
+                    s = Math.abs(i),
+                    r = o - s;
+                if (r > 0) {
+                    cutBox(e, r, o, i);
+                    const n = (r / 2 + s / 2) * Math.sign(i);
+                    addOverhang("x" == t ? e.threejs.position.x + n : e.threejs.position.x, "z" == t ? e.threejs.position.z + n : e.threejs.position.z, "x" == t ? s : e.width, "z" == t ? s : e.depth);
+                    const a = "x" == t ? e.threejs.position.x : -10,
+                        d = "z" == t ? e.threejs.position.z : -10,
+                        c = e.width,
+                        l = e.depth,
+                        h = "x" == t ? "z" : "x";
+                    scoreElement && (scoreElement.innerText = stack.length - 1), addLayer(a, d, c, l, h);
+                } else missedTheSpot();
+            }
+            function missedTheSpot() {
+                const e = stack[stack.length - 1];
+                addOverhang(e.threejs.position.x, e.threejs.position.z, e.width, e.depth), world.remove(e.cannonjs), scene.remove(e.threejs), (gameEnded = !0), resultsElement && !autopilot && (resultsElement.style.display = "flex");
+            }
+            function animation(e) {
+                if (lastTime) {
+                    const n = e - lastTime,
+                        t = 0.008,
+                        o = stack[stack.length - 1],
+                        i = stack[stack.length - 2];
+                    !gameEnded && (!autopilot || (autopilot && o.threejs.position[o.direction] < i.threejs.position[o.direction] + robotPrecision))
+                        ? ((o.threejs.position[o.direction] += t * n), (o.cannonjs.position[o.direction] += t * n), o.threejs.position[o.direction] > 10 && missedTheSpot())
+                        : autopilot && (splitBlockAndAddNextOneIfOverlaps(), setRobotPrecision()),
+                        camera.position.y < boxHeight * (stack.length - 2) + 4 && (camera.position.y += t * n),
+                        updatePhysics(n),
+                        renderer.render(scene, camera);
+                }
+                lastTime = e;
+            }
+            function updatePhysics(e) {
+                world.step(e / 1e3),
+                    overhangs.forEach((e) => {
+                        e.threejs.position.copy(e.cannonjs.position), e.threejs.quaternion.copy(e.cannonjs.quaternion);
+                    });
+            }
+            init(),
+                window.addEventListener("mousedown", eventHandler),
+                window.addEventListener("touchstart", eventHandler),
+                window.addEventListener("keydown", function (e) {
+                    return " " == e.key ? (e.preventDefault(), void eventHandler()) : "R" == e.key || "r" == e.key ? (e.preventDefault(), void startGame()) : void 0;
+                }),
+                window.addEventListener("resize", () => {
+                    console.log("resize", window.innerWidth, window.innerHeight);
+                    const e = 10 / (window.innerWidth / window.innerHeight);
+                    (camera.top = e / 2), (camera.bottom = e / -2), renderer.setSize(window.innerWidth, window.innerHeight), renderer.render(scene, camera);
+                });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Racing Game</title>
+        <style>
+            @import url("https://fonts.googleapis.com/css?family=Press+Start+2P");
+
+            body {
+                margin: 0;
+                color: white;
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            }
+
+            button {
+                outline: none;
+                cursor: pointer;
+                border: none;
+                box-shadow: 3px 5px 0px 0px rgba(0, 0, 0, 0.75);
+            }
+
+            a,
+            a:visited {
+                color: inherit;
+            }
+
+            #score {
+                position: absolute;
+                font-family: "Press Start 2P", cursive;
+                font-size: 0.9em;
+                color: white;
+                transform: translate(-50%, -50%);
+                opacity: 0.9;
+                max-width: 100px;
+                text-align: center;
+                line-height: 1.6em;
+            }
+
+            #controls {
+                position: absolute;
+                bottom: 50px;
+                left: 50px;
+                display: none;
+            }
+
+            #controls #buttons {
+                width: 80px;
+                opacity: 0;
+                transition: opacity 2s;
+            }
+
+            #controls #instructions {
+                margin-left: 20px;
+                max-width: 300px;
+                background-color: rgba(0, 0, 0, 0.2);
+                padding: 20px;
+                opacity: 0;
+                transition: opacity 2s;
+            }
+
+            #controls button {
+                width: 100%;
+                height: 40px;
+                background-color: white;
+                border: 1px solid black;
+                margin-bottom: 10px;
+            }
+
+            #results {
+                position: absolute;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+                width: 100%;
+                background-color: rgba(20, 20, 20, 0.75);
+                display: none;
+                z-index: 51;
+            }
+
+            #results .content {
+                max-width: 350px;
+                padding: 50px;
+                border-radius: 20px;
+            }
+
+            #result-youtube {
+                display: flex;
+                background-color: white;
+                padding: 20px;
+                color: black;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+            #result-youtube span {
+                margin-top: 5px;
+                margin-left: 20px;
+            }
+
+            .youtube,
+            #youtube-card {
+                display: none;
+                color: black;
+            }
+
+            #youtube-main {
+                opacity: 0;
+                transition: opacity 2s;
+            }
+
+            @media (min-height: 425px) {
+                #score {
+                    font-size: 1.5em;
+                    max-width: 150px;
+                }
+
+                #controls {
+                    display: flex;
+                }
+
+                /** Youtube logo by https://codepen.io/alvaromontoro */
+                .youtube {
+                    z-index: 50;
+                    width: 100px;
+                    min-width: 100px;
+                    height: 70px;
+                    position: fixed;
+                    bottom: 50px;
+                    right: 50px;
+                    transform: scale(0.8);
+                    transition: transform 0.5s;
+                    display: block;
+                    background: red;
+                    border-radius: 50% / 11%;
+                }
+
+                #results .youtube {
+                    position: relative;
+                    right: 0;
+                    bottom: 0;
+                }
+
+                .youtube:hover,
+                .youtube:focus {
+                    transform: scale(0.9);
+                    color: black;
+                }
+
+                .youtube::before {
+                    content: "";
+                    display: block;
+                    position: absolute;
+                    top: 7.5%;
+                    left: -6%;
+                    width: 112%;
+                    height: 85%;
+                    background: red;
+                    border-radius: 9% / 50%;
+                }
+
+                .youtube::after {
+                    content: "";
+                    display: block;
+                    position: absolute;
+                    top: 20px;
+                    left: 40px;
+                    width: 45px;
+                    height: 30px;
+                    border: 15px solid transparent;
+                    box-sizing: border-box;
+                    border-left: 30px solid white;
+                }
+
+                .youtube span {
+                    font-size: 0;
+                    position: absolute;
+                    width: 0;
+                    height: 0;
+                    overflow: hidden;
+                }
+
+                .youtube:hover + #youtube-card {
+                    z-index: 49;
+                    display: block;
+                    position: fixed;
+                    bottom: 42px;
+                    width: 300px;
+                    background-color: white;
+                    right: 40px;
+                    padding: 25px 130px 25px 25px;
+                }
+            }
+        </style>
+    </head>
+    <body oncontextmenu="return false" style="background-image: url('https://res.cloudinary.com/dpoer5oaq/image/upload/v1630345961/wp3255727_skdva5.jpg');">
+        <div id="score">Press UP</div>
+        <div id="controls">
+            <div id="buttons">
+                <button id="accelerate">
+                    <svg width="30" height="30" viewBox="0 0 10 10">
+                        <g transform="rotate(0, 5,5)">
+                            <path d="M5,4 L7,6 L3,6 L5,4" />
+                        </g>
+                    </svg>
+                </button>
+                <button id="decelerate">
+                    <svg width="30" height="30" viewBox="0 0 10 10">
+                        <g transform="rotate(180, 5,5)">
+                            <path d="M5,4 L7,6 L3,6 L5,4" />
+                        </g>
+                    </svg>
+                </button>
+            </div>
+            <div id="instructions">
+                Press UP to start. Avoid collision with other vehicles by accelerating or decelerating with the UP and DOWN keys.
+            </div>
+        </div>
+        <div id="results">
+            <div class="content">
+                <h1>You hit another vehicle</h1>
+                <p>To reset the game press R</p>
+                <a style="display: none !important;" id="result-youtube" target="_blank" href="https://youtu.be/JhgBwJn1bQw">
+                    <div class="youtube"></div>
+                    <span>Learn how to build this game with Three.js on YouTube</span>
+                </a>
+                <p style="display: none !important;">
+                    Follow me
+                    <a href="https://twitter.com/HunorBorbely" , target="_blank">@HunorBorbely</a>
+                </p>
+            </div>
+        </div>
+        <a style="display: none !important;" id="youtube-main" class="youtube" target="_blank" href="https://youtu.be/JhgBwJn1bQw">
+            <span>Learn Three.js</span>
+        </a>
+        <div style="display: none !important;" id="youtube-card">
+            Learn Three.js while building this game on YouTube
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r126/three.min.js"></script>
+        <script>
+            function pickRandom(e) {
+                return e[Math.floor(Math.random() * e.length)];
+            }
+            function getDistance(e, t) {
+                const n = t.x - e.x,
+                    r = t.y - e.y;
+                return Math.sqrt(n ** 2 + r ** 2);
+            }
+            window.focus();
+            const vehicleColors = [10822947, 15674710, 709631, 16752412],
+                lawnGreen = "#67C240",
+                trackColor = "#546E90",
+                edgeColor = "#725F48",
+                treeCrownColor = 4820012,
+                treeTrunkColor = 4931375,
+                wheelGeometry = new THREE.BoxBufferGeometry(12, 33, 12),
+                wheelMaterial = new THREE.MeshLambertMaterial({ color: 3355443 }),
+                treeTrunkGeometry = new THREE.BoxBufferGeometry(15, 15, 30),
+                treeTrunkMaterial = new THREE.MeshLambertMaterial({ color: 4931375 }),
+                treeCrownMaterial = new THREE.MeshLambertMaterial({ color: 4820012 }),
+                config = { showHitZones: !1, shadows: !0, trees: !0, curbs: !0, grid: !1 };
+            let score;
+            const speed = 0.0017,
+                playerAngleInitial = Math.PI;
+            let playerAngleMoved,
+                ready,
+                lastTimestamp,
+                accelerate = !1,
+                decelerate = !1,
+                otherVehicles = [];
+            const trackRadius = 225,
+                trackWidth = 45,
+                innerTrackRadius = trackRadius - 45,
+                outerTrackRadius = trackRadius + 45,
+                arcAngle1 = (1 / 3) * Math.PI,
+                deltaY = Math.sin(arcAngle1) * innerTrackRadius,
+                arcAngle2 = Math.asin(deltaY / outerTrackRadius),
+                arcCenterX = (Math.cos(arcAngle1) * innerTrackRadius + Math.cos(arcAngle2) * outerTrackRadius) / 2,
+                arcAngle3 = Math.acos(arcCenterX / innerTrackRadius),
+                arcAngle4 = Math.acos(arcCenterX / outerTrackRadius),
+                scoreElement = document.getElementById("score"),
+                buttonsElement = document.getElementById("buttons"),
+                instructionsElement = document.getElementById("instructions"),
+                resultsElement = document.getElementById("results"),
+                accelerateButton = document.getElementById("accelerate"),
+                decelerateButton = document.getElementById("decelerate"),
+                youtubeLogo = document.getElementById("youtube-main");
+            setTimeout(() => {
+                ready && (instructionsElement.style.opacity = 1), (buttonsElement.style.opacity = 1), (youtubeLogo.style.opacity = 1);
+            }, 4e3);
+            const aspectRatio = window.innerWidth / window.innerHeight,
+                cameraWidth = 960,
+                cameraHeight = cameraWidth / aspectRatio,
+                camera = new THREE.OrthographicCamera(cameraWidth / -2, cameraWidth / 2, cameraHeight / 2, cameraHeight / -2, 50, 700);
+            camera.position.set(0, -210, 300), camera.lookAt(0, 0, 0);
+            const scene = new THREE.Scene(),
+                playerCar = Car();
+            scene.add(playerCar), renderMap(cameraWidth, 2 * cameraHeight);
+            const ambientLight = new THREE.AmbientLight(16777215, 0.6);
+            scene.add(ambientLight);
+            const dirLight = new THREE.DirectionalLight(16777215, 0.6);
+            if (
+                (dirLight.position.set(100, -300, 300),
+                (dirLight.castShadow = !0),
+                (dirLight.shadow.mapSize.width = 1024),
+                (dirLight.shadow.mapSize.height = 1024),
+                (dirLight.shadow.camera.left = -400),
+                (dirLight.shadow.camera.right = 350),
+                (dirLight.shadow.camera.top = 400),
+                (dirLight.shadow.camera.bottom = -300),
+                (dirLight.shadow.camera.near = 100),
+                (dirLight.shadow.camera.far = 800),
+                scene.add(dirLight),
+                config.grid)
+            ) {
+                const e = new THREE.GridHelper(80, 8);
+                (e.rotation.x = Math.PI / 2), scene.add(e);
+            }
+            const renderer = new THREE.WebGLRenderer({ antialias: !0, powerPreference: "high-performance" });
+            function reset() {
+                (playerAngleMoved = 0),
+                    (score = 0),
+                    (scoreElement.innerText = "Press UP"),
+                    otherVehicles.forEach((e) => {
+                        scene.remove(e.mesh),
+                            e.mesh.userData.hitZone1 && scene.remove(e.mesh.userData.hitZone1),
+                            e.mesh.userData.hitZone2 && scene.remove(e.mesh.userData.hitZone2),
+                            e.mesh.userData.hitZone3 && scene.remove(e.mesh.userData.hitZone3);
+                    }),
+                    (otherVehicles = []),
+                    (resultsElement.style.display = "none"),
+                    (lastTimestamp = void 0),
+                    movePlayerCar(0),
+                    renderer.render(scene, camera),
+                    (ready = !0);
+            }
+            function startGame() {
+                ready && ((ready = !1), (scoreElement.innerText = 0), (buttonsElement.style.opacity = 1), (instructionsElement.style.opacity = 0), (youtubeLogo.style.opacity = 1), renderer.setAnimationLoop(animation));
+            }
+            function positionScoreElement() {
+                const e = (arcCenterX / cameraWidth) * window.innerWidth;
+                scoreElement.style.cssText = `\n    left: ${window.innerWidth / 2 - 1.3 * e}px;\n    top: ${window.innerHeight / 2}px\n  `;
+            }
+            function getLineMarkings(e, t) {
+                const n = document.createElement("canvas");
+                (n.width = e), (n.height = t);
+                const r = n.getContext("2d");
+                return (
+                    (r.fillStyle = trackColor),
+                    r.fillRect(0, 0, e, t),
+                    (r.lineWidth = 2),
+                    (r.strokeStyle = "#E0FFFF"),
+                    r.setLineDash([10, 14]),
+                    r.beginPath(),
+                    r.arc(e / 2 - arcCenterX, t / 2, trackRadius, 0, 2 * Math.PI),
+                    r.stroke(),
+                    r.beginPath(),
+                    r.arc(e / 2 + arcCenterX, t / 2, trackRadius, 0, 2 * Math.PI),
+                    r.stroke(),
+                    new THREE.CanvasTexture(n)
+                );
+            }
+            function getCurbsTexture(e, t) {
+                const n = document.createElement("canvas");
+                (n.width = e), (n.height = t);
+                const r = n.getContext("2d");
+                return (
+                    (r.fillStyle = lawnGreen),
+                    r.fillRect(0, 0, e, t),
+                    (r.lineWidth = 65),
+                    (r.strokeStyle = "#A2FF75"),
+                    r.beginPath(),
+                    r.arc(e / 2 - arcCenterX, t / 2, innerTrackRadius, arcAngle1, -arcAngle1),
+                    r.arc(e / 2 + arcCenterX, t / 2, outerTrackRadius, Math.PI + arcAngle2, Math.PI - arcAngle2, !0),
+                    r.stroke(),
+                    r.beginPath(),
+                    r.arc(e / 2 + arcCenterX, t / 2, innerTrackRadius, Math.PI + arcAngle1, Math.PI - arcAngle1),
+                    r.arc(e / 2 - arcCenterX, t / 2, outerTrackRadius, arcAngle2, -arcAngle2, !0),
+                    r.stroke(),
+                    (r.lineWidth = 60),
+                    (r.strokeStyle = lawnGreen),
+                    r.beginPath(),
+                    r.arc(e / 2 - arcCenterX, t / 2, innerTrackRadius, arcAngle1, -arcAngle1),
+                    r.arc(e / 2 + arcCenterX, t / 2, outerTrackRadius, Math.PI + arcAngle2, Math.PI - arcAngle2, !0),
+                    r.arc(e / 2 + arcCenterX, t / 2, innerTrackRadius, Math.PI + arcAngle1, Math.PI - arcAngle1),
+                    r.arc(e / 2 - arcCenterX, t / 2, outerTrackRadius, arcAngle2, -arcAngle2, !0),
+                    r.stroke(),
+                    (r.lineWidth = 6),
+                    (r.strokeStyle = edgeColor),
+                    r.beginPath(),
+                    r.arc(e / 2 - arcCenterX, t / 2, outerTrackRadius, 0, 2 * Math.PI),
+                    r.stroke(),
+                    r.beginPath(),
+                    r.arc(e / 2 + arcCenterX, t / 2, outerTrackRadius, 0, 2 * Math.PI),
+                    r.stroke(),
+                    r.beginPath(),
+                    r.arc(e / 2 - arcCenterX, t / 2, innerTrackRadius, 0, 2 * Math.PI),
+                    r.stroke(),
+                    r.beginPath(),
+                    r.arc(e / 2 + arcCenterX, t / 2, innerTrackRadius, 0, 2 * Math.PI),
+                    r.stroke(),
+                    new THREE.CanvasTexture(n)
+                );
+            }
+            function getLeftIsland() {
+                const e = new THREE.Shape();
+                return e.absarc(-arcCenterX, 0, innerTrackRadius, arcAngle1, -arcAngle1, !1), e.absarc(arcCenterX, 0, outerTrackRadius, Math.PI + arcAngle2, Math.PI - arcAngle2, !0), e;
+            }
+            function getMiddleIsland() {
+                const e = new THREE.Shape();
+                return e.absarc(-arcCenterX, 0, innerTrackRadius, arcAngle3, -arcAngle3, !0), e.absarc(arcCenterX, 0, innerTrackRadius, Math.PI + arcAngle3, Math.PI - arcAngle3, !0), e;
+            }
+            function getRightIsland() {
+                const e = new THREE.Shape();
+                return e.absarc(arcCenterX, 0, innerTrackRadius, Math.PI - arcAngle1, Math.PI + arcAngle1, !0), e.absarc(-arcCenterX, 0, outerTrackRadius, -arcAngle2, arcAngle2, !1), e;
+            }
+            function getOuterField(e, t) {
+                const n = new THREE.Shape();
+                return (
+                    n.moveTo(-e / 2, -t / 2),
+                    n.lineTo(0, -t / 2),
+                    n.absarc(-arcCenterX, 0, outerTrackRadius, -arcAngle4, arcAngle4, !0),
+                    n.absarc(arcCenterX, 0, outerTrackRadius, Math.PI - arcAngle4, Math.PI + arcAngle4, !0),
+                    n.lineTo(0, -t / 2),
+                    n.lineTo(e / 2, -t / 2),
+                    n.lineTo(e / 2, t / 2),
+                    n.lineTo(-e / 2, t / 2),
+                    n
+                );
+            }
+            function renderMap(e, t) {
+                const n = getLineMarkings(e, t),
+                    r = new THREE.PlaneBufferGeometry(e, t),
+                    a = new THREE.MeshLambertMaterial({ map: n }),
+                    o = new THREE.Mesh(r, a);
+                (o.receiveShadow = !0), (o.matrixAutoUpdate = !1), scene.add(o);
+                const i = getLeftIsland(),
+                    c = getMiddleIsland(),
+                    s = getRightIsland(),
+                    l = getOuterField(e, t),
+                    d = getCurbsTexture(e, t);
+                (d.offset = new THREE.Vector2(0.5, 0.5)), d.repeat.set(1 / e, 1 / t);
+                const h = new THREE.ExtrudeBufferGeometry([i, s, c, l], { depth: 6, bevelEnabled: !1 }),
+                    u = new THREE.Mesh(h, [new THREE.MeshLambertMaterial({ color: !config.curbs && lawnGreen, map: config.curbs && d }), new THREE.MeshLambertMaterial({ color: 2306332 })]);
+                if (((u.receiveShadow = !0), (u.matrixAutoUpdate = !1), scene.add(u), positionScoreElement(), config.trees)) {
+                    const e = Tree();
+                    (e.position.x = 1.3 * arcCenterX), scene.add(e);
+                    const t = Tree();
+                    (t.position.y = 1.9 * arcCenterX), (t.position.x = 1.3 * arcCenterX), scene.add(t);
+                    const n = Tree();
+                    (n.position.x = 0.8 * arcCenterX), (n.position.y = 2 * arcCenterX), scene.add(n);
+                    const r = Tree();
+                    (r.position.x = 1.8 * arcCenterX), (r.position.y = 2 * arcCenterX), scene.add(r);
+                    const a = Tree();
+                    (a.position.x = 1 * -arcCenterX), (a.position.y = 2 * arcCenterX), scene.add(a);
+                    const o = Tree();
+                    (o.position.x = 2 * -arcCenterX), (o.position.y = 1.8 * arcCenterX), scene.add(o);
+                    const i = Tree();
+                    (i.position.x = 0.8 * arcCenterX), (i.position.y = 2 * -arcCenterX), scene.add(i);
+                    const c = Tree();
+                    (c.position.x = 1.8 * arcCenterX), (c.position.y = 2 * -arcCenterX), scene.add(c);
+                    const s = Tree();
+                    (s.position.x = 1 * -arcCenterX), (s.position.y = 2 * -arcCenterX), scene.add(s);
+                    const l = Tree();
+                    (l.position.x = 2 * -arcCenterX), (l.position.y = 1.8 * -arcCenterX), scene.add(l);
+                    const d = Tree();
+                    (d.position.x = 0.6 * arcCenterX), (d.position.y = 2.3 * -arcCenterX), scene.add(d);
+                    const h = Tree();
+                    (h.position.x = 1.5 * arcCenterX), (h.position.y = 2.4 * -arcCenterX), scene.add(h);
+                    const u = Tree();
+                    (u.position.x = 0.7 * -arcCenterX), (u.position.y = 2.4 * -arcCenterX), scene.add(u);
+                    const m = Tree();
+                    (m.position.x = 1.5 * -arcCenterX), (m.position.y = 1.8 * -arcCenterX), scene.add(m);
+                }
+            }
+            function getCarFrontTexture() {
+                const e = document.createElement("canvas");
+                (e.width = 64), (e.height = 32);
+                const t = e.getContext("2d");
+                return (t.fillStyle = "#ffffff"), t.fillRect(0, 0, 64, 32), (t.fillStyle = "#666666"), t.fillRect(8, 8, 48, 24), new THREE.CanvasTexture(e);
+            }
+            function getCarSideTexture() {
+                const e = document.createElement("canvas");
+                (e.width = 128), (e.height = 32);
+                const t = e.getContext("2d");
+                return (t.fillStyle = "#ffffff"), t.fillRect(0, 0, 128, 32), (t.fillStyle = "#666666"), t.fillRect(10, 8, 38, 24), t.fillRect(58, 8, 60, 24), new THREE.CanvasTexture(e);
+            }
+            function Car() {
+                const e = new THREE.Group(),
+                    t = pickRandom(vehicleColors),
+                    n = new THREE.Mesh(new THREE.BoxBufferGeometry(60, 30, 15), new THREE.MeshLambertMaterial({ color: t }));
+                (n.position.z = 12), (n.castShadow = !0), (n.receiveShadow = !0), e.add(n);
+                const r = getCarFrontTexture();
+                (r.center = new THREE.Vector2(0.5, 0.5)), (r.rotation = Math.PI / 2);
+                const a = getCarFrontTexture();
+                (a.center = new THREE.Vector2(0.5, 0.5)), (a.rotation = -Math.PI / 2);
+                const o = getCarSideTexture();
+                o.flipY = !1;
+                const i = getCarSideTexture(),
+                    c = new THREE.Mesh(new THREE.BoxBufferGeometry(33, 24, 12), [
+                        new THREE.MeshLambertMaterial({ map: r }),
+                        new THREE.MeshLambertMaterial({ map: a }),
+                        new THREE.MeshLambertMaterial({ map: o }),
+                        new THREE.MeshLambertMaterial({ map: i }),
+                        new THREE.MeshLambertMaterial({ color: 16777215 }),
+                        new THREE.MeshLambertMaterial({ color: 16777215 }),
+                    ]);
+                (c.position.x = -6), (c.position.z = 25.5), (c.castShadow = !0), (c.receiveShadow = !0), e.add(c);
+                const s = new Wheel();
+                (s.position.x = -18), e.add(s);
+                const l = new Wheel();
+                return (l.position.x = 18), e.add(l), config.showHitZones && ((e.userData.hitZone1 = HitZone()), (e.userData.hitZone2 = HitZone())), e;
+            }
+            function getTruckFrontTexture() {
+                const e = document.createElement("canvas");
+                (e.width = 32), (e.height = 32);
+                const t = e.getContext("2d");
+                return (t.fillStyle = "#ffffff"), t.fillRect(0, 0, 32, 32), (t.fillStyle = "#666666"), t.fillRect(0, 5, 32, 10), new THREE.CanvasTexture(e);
+            }
+            function getTruckSideTexture() {
+                const e = document.createElement("canvas");
+                (e.width = 32), (e.height = 32);
+                const t = e.getContext("2d");
+                return (t.fillStyle = "#ffffff"), t.fillRect(0, 0, 32, 32), (t.fillStyle = "#666666"), t.fillRect(17, 5, 15, 10), new THREE.CanvasTexture(e);
+            }
+            function Truck() {
+                const e = new THREE.Group(),
+                    t = pickRandom(vehicleColors),
+                    n = new THREE.Mesh(new THREE.BoxBufferGeometry(100, 25, 5), new THREE.MeshLambertMaterial({ color: 11847420 }));
+                (n.position.z = 10), e.add(n);
+                const r = new THREE.Mesh(new THREE.BoxBufferGeometry(75, 35, 40), new THREE.MeshLambertMaterial({ color: 16777215 }));
+                (r.position.x = -15), (r.position.z = 30), (r.castShadow = !0), (r.receiveShadow = !0), e.add(r);
+                const a = getTruckFrontTexture();
+                (a.center = new THREE.Vector2(0.5, 0.5)), (a.rotation = Math.PI / 2);
+                const o = getTruckSideTexture();
+                o.flipY = !1;
+                const i = getTruckSideTexture(),
+                    c = new THREE.Mesh(new THREE.BoxBufferGeometry(25, 30, 30), [
+                        new THREE.MeshLambertMaterial({ color: t, map: a }),
+                        new THREE.MeshLambertMaterial({ color: t }),
+                        new THREE.MeshLambertMaterial({ color: t, map: o }),
+                        new THREE.MeshLambertMaterial({ color: t, map: i }),
+                        new THREE.MeshLambertMaterial({ color: t }),
+                        new THREE.MeshLambertMaterial({ color: t }),
+                    ]);
+                (c.position.x = 40), (c.position.z = 20), (c.castShadow = !0), (c.receiveShadow = !0), e.add(c);
+                const s = Wheel();
+                (s.position.x = -30), e.add(s);
+                const l = Wheel();
+                (l.position.x = 10), e.add(l);
+                const d = Wheel();
+                return (d.position.x = 38), e.add(d), config.showHitZones && ((e.userData.hitZone1 = HitZone()), (e.userData.hitZone2 = HitZone()), (e.userData.hitZone3 = HitZone())), e;
+            }
+            function HitZone() {
+                const e = new THREE.Mesh(new THREE.CylinderGeometry(20, 20, 60, 30), new THREE.MeshLambertMaterial({ color: 16711680 }));
+                return (e.position.z = 25), (e.rotation.x = Math.PI / 2), scene.add(e), e;
+            }
+            function Wheel() {
+                const e = new THREE.Mesh(wheelGeometry, wheelMaterial);
+                return (e.position.z = 6), (e.castShadow = !1), (e.receiveShadow = !1), e;
+            }
+            function Tree() {
+                const e = new THREE.Group(),
+                    t = new THREE.Mesh(treeTrunkGeometry, treeTrunkMaterial);
+                (t.position.z = 10), (t.castShadow = !0), (t.receiveShadow = !0), (t.matrixAutoUpdate = !1), e.add(t);
+                const n = pickRandom([45, 60, 75]),
+                    r = new THREE.Mesh(new THREE.SphereGeometry(n / 2, 30, 30), treeCrownMaterial);
+                return (r.position.z = n / 2 + 30), (r.castShadow = !0), (r.receiveShadow = !1), e.add(r), e;
+            }
+            function animation(e) {
+                if (!lastTimestamp) return void (lastTimestamp = e);
+                const t = e - lastTimestamp;
+                movePlayerCar(t);
+                const n = Math.floor(Math.abs(playerAngleMoved) / (2 * Math.PI));
+                n != score && ((score = n), (scoreElement.innerText = score)), otherVehicles.length < (n + 1) / 5 && addVehicle(), moveOtherVehicles(t), hitDetection(), renderer.render(scene, camera), (lastTimestamp = e);
+            }
+            function movePlayerCar(e) {
+                const t = getPlayerSpeed(),
+                    n = playerAngleInitial + (playerAngleMoved -= t * e),
+                    r = Math.cos(n) * trackRadius - arcCenterX,
+                    a = Math.sin(n) * trackRadius;
+                (playerCar.position.x = r), (playerCar.position.y = a), (playerCar.rotation.z = n - Math.PI / 2);
+            }
+            function moveOtherVehicles(e) {
+                otherVehicles.forEach((t) => {
+                    t.clockwise ? (t.angle -= speed * e * t.speed) : (t.angle += speed * e * t.speed);
+                    const n = Math.cos(t.angle) * trackRadius + arcCenterX,
+                        r = Math.sin(t.angle) * trackRadius,
+                        a = t.angle + (t.clockwise ? -Math.PI / 2 : Math.PI / 2);
+                    (t.mesh.position.x = n), (t.mesh.position.y = r), (t.mesh.rotation.z = a);
+                });
+            }
+            function getPlayerSpeed() {
+                return accelerate ? 2 * speed : decelerate ? 0.5 * speed : speed;
+            }
+            function addVehicle() {
+                const e = pickRandom(["car", "truck"]),
+                    t = getVehicleSpeed(e),
+                    n = Math.random() >= 0.5,
+                    r = n ? Math.PI / 2 : -Math.PI / 2,
+                    a = "car" == e ? Car() : Truck();
+                scene.add(a), otherVehicles.push({ mesh: a, type: e, speed: t, clockwise: n, angle: r });
+            }
+            function getVehicleSpeed(e) {
+                if ("car" == e) {
+                    const e = 1,
+                        t = 2;
+                    return e + Math.random() * (t - e);
+                }
+                if ("truck" == e) {
+                    const e = 0.6,
+                        t = 1.5;
+                    return e + Math.random() * (t - e);
+                }
+            }
+            function getHitZonePosition(e, t, n, r) {
+                const a = t + n ? -Math.PI / 2 : +Math.PI / 2;
+                return { x: e.x + Math.cos(a) * r, y: e.y + Math.sin(a) * r };
+            }
+            function hitDetection() {
+                const e = getHitZonePosition(playerCar.position, playerAngleInitial + playerAngleMoved, !0, 15),
+                    t = getHitZonePosition(playerCar.position, playerAngleInitial + playerAngleMoved, !0, -15);
+                config.showHitZones && ((playerCar.userData.hitZone1.position.x = e.x), (playerCar.userData.hitZone1.position.y = e.y), (playerCar.userData.hitZone2.position.x = t.x), (playerCar.userData.hitZone2.position.y = t.y)),
+                    otherVehicles.some((n) => {
+                        if ("car" == n.type) {
+                            const r = getHitZonePosition(n.mesh.position, n.angle, n.clockwise, 15),
+                                a = getHitZonePosition(n.mesh.position, n.angle, n.clockwise, -15);
+                            if (
+                                (config.showHitZones && ((n.mesh.userData.hitZone1.position.x = r.x), (n.mesh.userData.hitZone1.position.y = r.y), (n.mesh.userData.hitZone2.position.x = a.x), (n.mesh.userData.hitZone2.position.y = a.y)),
+                                getDistance(e, r) < 40)
+                            )
+                                return !0;
+                            if (getDistance(e, a) < 40) return !0;
+                            if (getDistance(t, r) < 40) return !0;
+                        }
+                        if ("truck" == n.type) {
+                            const r = getHitZonePosition(n.mesh.position, n.angle, n.clockwise, 35),
+                                a = getHitZonePosition(n.mesh.position, n.angle, n.clockwise, 0),
+                                o = getHitZonePosition(n.mesh.position, n.angle, n.clockwise, -35);
+                            if (
+                                (config.showHitZones &&
+                                    ((n.mesh.userData.hitZone1.position.x = r.x),
+                                    (n.mesh.userData.hitZone1.position.y = r.y),
+                                    (n.mesh.userData.hitZone2.position.x = a.x),
+                                    (n.mesh.userData.hitZone2.position.y = a.y),
+                                    (n.mesh.userData.hitZone3.position.x = o.x),
+                                    (n.mesh.userData.hitZone3.position.y = o.y)),
+                                getDistance(e, r) < 40)
+                            )
+                                return !0;
+                            if (getDistance(e, a) < 40) return !0;
+                            if (getDistance(e, o) < 40) return !0;
+                            if (getDistance(t, r) < 40) return !0;
+                        }
+                    }) && (resultsElement && (resultsElement.style.display = "flex"), renderer.setAnimationLoop(null));
+            }
+            renderer.setSize(window.innerWidth, window.innerHeight),
+                config.shadows && (renderer.shadowMap.enabled = !0),
+                document.body.appendChild(renderer.domElement),
+                reset(),
+                accelerateButton.addEventListener("mousedown", function () {
+                    startGame(), (accelerate = !0);
+                }),
+                decelerateButton.addEventListener("mousedown", function () {
+                    startGame(), (decelerate = !0);
+                }),
+                accelerateButton.addEventListener("mouseup", function () {
+                    accelerate = !1;
+                }),
+                decelerateButton.addEventListener("mouseup", function () {
+                    decelerate = !1;
+                }),
+                window.addEventListener("keydown", function (e) {
+                    if ("ArrowUp" == e.key) return startGame(), void (accelerate = !0);
+                    "ArrowDown" != e.key ? ("R" != e.key && "r" != e.key) || location.reload() : (decelerate = !0);
+                }),
+                window.addEventListener("keyup", function (e) {
+                    "ArrowUp" != e.key ? "ArrowDown" != e.key || (decelerate = !1) : (accelerate = !1);
+                }),
+                window.addEventListener("resize", () => {
+                    console.log("resize", window.innerWidth, window.innerHeight);
+                    const e = window.innerWidth / window.innerHeight,
+                        t = cameraWidth / e;
+                    (camera.top = t / 2), (camera.bottom = t / -2), camera.updateProjectionMatrix(), positionScoreElement(), renderer.setSize(window.innerWidth, window.innerHeight), renderer.render(scene, camera);
+                });
+        </script>
+    </body>
+</html>
