@@ -10,6 +10,15 @@
                 font-size: 2em;
                 color: white;
             }
+            body {
+              -webkit-touch-callout: none; /* iOS Safari */
+                -webkit-user-select: none; /* Safari */
+                 -khtml-user-select: none; /* Konqueror HTML */
+                   -moz-user-select: none; /* Old versions of Firefox */
+                    -ms-user-select: none; /* Internet Explorer/Edge */
+                        user-select: none; /* Non-prefixed version, currently
+                                              supported by Chrome, Edge, Opera and Firefox */
+            }
             button {
                 outline: none;
                 cursor: pointer;
@@ -99,6 +108,7 @@
         <div id="end">
             <button id="retry">Retry</button>
         </div>
+        <img onclick="window.close();" width="80" style="position:absolute;z-index:99999;right:5px;bottom:15px;" src="https://res.cloudinary.com/dpoer5oaq/image/upload/v1630625180/276-2767433_back-button-white-png-transparent-png-removebg-preview_tjhw7y.png"/>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r126/three.min.js"></script>
         <script>
             const counterDOM = document.getElementById("counter"),
@@ -443,6 +453,11 @@
                     "38" == e.keyCode ? move("forward") : "40" == e.keyCode ? move("backward") : "37" == e.keyCode ? move("left") : "39" == e.keyCode && move("right");
                 }),
                 requestAnimationFrame(animate);
+                window.addEventListener("keydown", function(e) {
+                    if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
+                        e.preventDefault();
+                    }
+                }, false);
         </script>
     </body>
 </html>

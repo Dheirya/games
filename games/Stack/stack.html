@@ -11,6 +11,15 @@
                 font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
                 cursor: pointer;
             }
+            body {
+              -webkit-touch-callout: none; /* iOS Safari */
+                -webkit-user-select: none; /* Safari */
+                 -khtml-user-select: none; /* Konqueror HTML */
+                   -moz-user-select: none; /* Old versions of Firefox */
+                    -ms-user-select: none; /* Internet Explorer/Edge */
+                        user-select: none; /* Non-prefixed version, currently
+                                              supported by Chrome, Edge, Opera and Firefox */
+            }
             #instructions {
                 display: none;
             }
@@ -142,7 +151,7 @@
         <div id="instructions">
             <div class="content">
                 <p>Stack the blocks on top of each other</p>
-                <p>Click, tap or press Space when a block is above the stack. Can you reach the blue color blocks?</p>
+                <p>Click, tap or press Space when a block is above the stack.</p>
                 <p>Click, tap or press Space to start game</p>
             </div>
         </div>
@@ -169,6 +178,7 @@
         <div style="display: none;" id="skillshare-card">
             Learn Three.js + Cannon.js while building this game (free course)
         </div>
+        <img onclick="window.close();" width="80" style="position:absolute;z-index:99999;right:5px;bottom:15px;" src="https://res.cloudinary.com/dpoer5oaq/image/upload/v1630625180/276-2767433_back-button-white-png-transparent-png-removebg-preview_tjhw7y.png"/>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r124/three.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
         <script>
@@ -185,7 +195,7 @@
             }
             function init() {
                 (autopilot = !0),
-                    (gameEnded = !1),
+                    (gameEnded = !0),
                     (lastTime = 0),
                     (stack = []),
                     (overhangs = []),
@@ -318,6 +328,11 @@
                     const e = 10 / (window.innerWidth / window.innerHeight);
                     (camera.top = e / 2), (camera.bottom = e / -2), renderer.setSize(window.innerWidth, window.innerHeight), renderer.render(scene, camera);
                 });
+            window.addEventListener("keydown", function(e) {
+                if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
+                    e.preventDefault();
+                }
+            }, false);
         </script>
     </body>
 </html>
